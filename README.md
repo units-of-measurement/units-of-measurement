@@ -1,3 +1,3 @@
 # units
 
-[Initial testing repository](https://github.com/kaiiam/UO_revamp) see qname_processing directory. 
+[Initial testing repository](https://github.com/kaiiam/UO_revamp) see `nc_name_script` directory. 
