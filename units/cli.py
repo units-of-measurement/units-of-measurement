@@ -12,7 +12,8 @@ def main():
     parser.add_argument("-s", "--si", help="SI unit labels and codes", required=True)
     parser.add_argument("-p", "--prefixes", help="SI prefix labels and codes", required=True)
     parser.add_argument("-e", "--exponents", help="Exponent labels", required=True)
-    parser.add_argument("-o", "--output", help="Output TTL file", required=True)
+    parser.add_argument("-o", "--output", help="Output file", required=True)
+    parser.add_argument("-f", "--format", help="Output format: ttl or json-ld (default: ttl)")
     parser.add_argument("-l", "--lang", help="Language for annotations (default: en)", default="en")
     parser.add_argument("-O", "--om-mappings", help="")
     parser.add_argument("-Q", "--qudt-mappings", help="")
@@ -21,6 +22,16 @@ def main():
     parser.add_argument("-N", "--nerc-mappings", help="")
     args = parser.parse_args()
 
+    # Get the format from args or guess it from the output file
+    if args.format:
+        outfmt = args.format
+    else:
+        if args.output.endswith(".json") or args.output.endswith(".jsonld"):
+            outfmt = "json-ld"
+        else:
+            outfmt = "ttl"
+
+    # Read in provided files
     sep = "\t"
     if args.input.endswith(".csv"):
         sep = ","
@@ -80,9 +91,8 @@ def main():
             for row in reader:
                 mappings.append(row)
 
-    ttl = convert(inputs, ucum_si, unit_prefixes, unit_exponents, mappings, lang=args.lang)
-    with open(args.output, "w") as f:
-        f.write(ttl)
+    gout = convert(inputs, ucum_si, unit_prefixes, unit_exponents, mappings, lang=args.lang)
+    gout.serialize(args.output, format=outfmt)
 
 
 if __name__ == "__main__":

@@ -4,6 +4,10 @@ import re
 
 from collections import Iterable
 from itertools import permutations
+from typing import List, Optional
+
+from lark.exceptions import LarkError
+from rdflib import Graph, Literal, Namespace, OWL, RDF, RDFS, SKOS
 from urllib.parse import quote as url_quote
 from .grammar import si_grammar, UnitsTransformer
 
@@ -22,19 +26,24 @@ OBOE_REGEX = r"(http://ecoinformatics.org/oboe/oboe.1.2/oboe-standards.owl#)(.*)
 NERC_REGEX = r"(http://vocab.nerc.ac.uk/collection/P06/current/)(.*)(/)"
 
 ONTOLOGY_PREFIXES = {
-    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
-    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
-    "xsd": "http://www.w3.org/2001/XMLSchema#",
-    "owl": "http://www.w3.org/2002/07/owl#",
     "IAO": "http://purl.obolibrary.org/obo/IAO_",
+    "NERC_P06": "http://vocab.nerc.ac.uk/collection/P06/current/",
+    "OBOE": "http://ecoinformatics.org/oboe/oboe.1.2/oboe-standards.owl#",
+    "OM": "http://www.ontology-of-units-of-measure.org/resource/om-2/",
+    "owl": "http://www.w3.org/2002/07/owl#",
+    "QUDT": "http://qudt.org/vocab/unit/",
+    "skos": "http://www.w3.org/2004/02/skos/core#",
     "unit": "https://w3id.org/units/",
     "UO": "http://purl.obolibrary.org/obo/UO_",
-    "OM": "http://www.ontology-of-units-of-measure.org/resource/om-2/",
-    "QUDT": "http://qudt.org/vocab/unit/",
-    "OBOE": "http://ecoinformatics.org/oboe/oboe.1.2/oboe-standards.owl#",
-    "NERC_P06": "http://vocab.nerc.ac.uk/collection/P06/current/",
-    "skos": "http://www.w3.org/2004/02/skos/core#",
 }
+
+IAO = Namespace(ONTOLOGY_PREFIXES["IAO"])
+NERC = Namespace(ONTOLOGY_PREFIXES["NERC_P06"])
+OBOE = Namespace(ONTOLOGY_PREFIXES["OBOE"])
+OM = Namespace(ONTOLOGY_PREFIXES["OM"])
+QUDT = Namespace(ONTOLOGY_PREFIXES["QUDT"])
+UNIT = Namespace(ONTOLOGY_PREFIXES["unit"])
+UO = Namespace(ONTOLOGY_PREFIXES["UO"])
 
 
 def convert(
@@ -44,7 +53,7 @@ def convert(
     unit_exponents: dict,
     mappings: list,
     lang="en",
-):
+) -> Graph:
     """
 
     :param inputs: list of UCUM codes
@@ -55,16 +64,16 @@ def convert(
     :param unit_exponents: dict of power to label (e.g., 2: "square")
     :param mappings: ontology mappings
     :param lang: language for annotations (default: en)
-    :return: TTL string representing given UCUM codes
+    :return: rdflib graph object
     """
-    # Add prefixes header
-    ttl_str = ""
+    gout = Graph()
+    # Add ontology prefixes
     for ns, base in ONTOLOGY_PREFIXES.items():
-        ttl_str += f"@prefix {ns}: <{base}> .\n"
+        gout.bind(ns, base)
 
     # Add definition annotation property
-    ttl_str += "\nIAO:0000115 a owl:AnnotationProperty ;\n"
-    ttl_str += '  rdfs:label "definition" .\n\n'
+    gout.add((IAO["0000115"], RDF.type, OWL.AnnotationProperty))
+    gout.add((IAO["0000115"], RDFS.label, Literal("definition")))
 
     # Process given inputs
     for inpt in inputs:
@@ -72,14 +81,14 @@ def convert(
         try:
             tree = si_grammar.parse(inpt)
             result = UnitsTransformer().transform(tree)
-        except:
+        except LarkError:
             logging.error(f"Could not process '{inpt}' with SI parser - this input will be skipped")
             continue
 
         # Attempt to flatten the result tree
         try:
             res_flat = flatten(result)
-        except:
+        except RecursionError:
             logging.error(f"Could not flatten result from '{inpt}' - this input will be skipped")
             continue
 
@@ -119,7 +128,7 @@ def convert(
         try:
             num_list = sorted(num_list, key=lambda k: (k["ucum_code"].casefold(), k))
             denom_list = sorted(denom_list, key=lambda k: (k["ucum_code"].casefold(), k))
-        except:
+        except ValueError:
             logging.error(f"Could not sort result from '{inpt}' - this input will be skipped")
             continue
 
@@ -146,9 +155,10 @@ def convert(
         mappings_complete = map_ucum_codes(ucum_si_list, mappings)
 
         # Format TTL from parser results
-        ttl_str += format_ttl(ucum_code, label, si_code, definition, mappings_complete, lang=lang)
-        ttl_str += "\n"
-    return ttl_str
+        triples = get_triples(ucum_code, label, si_code, definition, mappings_complete, lang=lang)
+        for t in triples:
+            gout.add(t)
+    return gout
 
 
 def flatten(x):
@@ -163,70 +173,55 @@ def flatten(x):
         return [x]
 
 
-def format_ttl(ucum_code, label, si_code, definition, mappings, lang="en"):
-    qudt_list = []
-    om_list = []
-    uo_list = []
-    oboe_list = []
-    nerc_list = []
+def get_triples(
+    ucum_code: str, label: str, si_code: str, definition: str, mappings: List[str], lang: str = "en"
+) -> List[tuple]:
+    # Create an identifier from the UCUM code
+    term = UNIT[url_quote(ucum_code)]
+    # Assert that this is an owl instance
+    triples = [(term, RDF.type, OWL.NamedIndividual)]
 
+    # Add annotations
+    if label:
+        triples.append((term, RDFS.label, Literal(label, lang=lang)))
+    if definition:
+        triples.append((term, IAO["0000115"], Literal(definition, lang=lang)))
+    if si_code:
+        triples.append((term, UNIT.SI_code, Literal(si_code)))
+    if ucum_code:
+        triples.append((term, UNIT.ucum_code, Literal(ucum_code)))
+
+    # Add mappings (if present)
     for m in mappings:
         if re.search(QUDT_REGEX, m):
             match = re.search(QUDT_REGEX, m)
             qudt_id = match.group(2)
-            qudt_id = "QUDT:" + qudt_id
-            qudt_list.append(qudt_id)
-        if re.search(OM_REGEX, m):
+            mapped_term = QUDT[qudt_id]
+        elif re.search(OM_REGEX, m):
             match = re.search(OM_REGEX, m)
             om_id = match.group(2)
-            om_id = "OM:" + om_id
-            om_list.append(om_id)
-        if re.search(UO_REGEX, m):
+            mapped_term = OM[om_id]
+        elif re.search(UO_REGEX, m):
             match = re.search(UO_REGEX, m)
             uo_id = match.group(2)
-            uo_id = "UO:" + uo_id
-            uo_list.append(uo_id)
-        if re.search(OBOE_REGEX, m):
+            mapped_term = UO[uo_id]
+        elif re.search(OBOE_REGEX, m):
             match = re.search(OBOE_REGEX, m)
             oboe_id = match.group(2)
-            oboe_id = "OBOE:" + oboe_id
-            oboe_list.append(oboe_id)
-        if re.search(NERC_REGEX, m):
+            mapped_term = OBOE[oboe_id]
+        elif re.search(NERC_REGEX, m):
             match = re.search(NERC_REGEX, m)
             nerc_id = match.group(2)
-            nerc_id = "NERC_P06:" + nerc_id
-            nerc_list.append(nerc_id)
-
-    # Create an identifier from the UCUM code
-    return_str = f"unit:{url_quote(ucum_code)}\n"
-    # Assert that this is an owl instance
-    return_list = ["  a owl:NamedIndividual"]
-
-    # Add annotations
-    if label:
-        return_list.append(f'  rdfs:label "{label}"@{lang}')
-    if definition:
-        return_list.append(f'  IAO:0000115 "{definition}"@{lang}')
-    if si_code:
-        return_list.append(f'  unit:SI_code "{si_code}"')
-    if ucum_code:
-        return_list.append(f'  unit:ucum_code "{ucum_code}"')
-    [return_list.append(f"  skos:exactMatch {x}") for x in qudt_list if qudt_list]
-    [return_list.append(f"  skos:exactMatch {x}") for x in om_list if om_list]
-    [return_list.append(f"  skos:exactMatch {x}") for x in uo_list if uo_list]
-    [return_list.append(f"  skos:exactMatch {x}") for x in oboe_list if oboe_list]
-    [return_list.append(f"  skos:exactMatch {x}") for x in nerc_list if nerc_list]
-
-    # Add ; and . for ttl formatting
-    for i, has_more in lookahead(return_list):
-        if has_more:
-            return_str += i + " ;\n"
+            mapped_term = NERC[nerc_id]
         else:
-            return_str += i + " .\n"
-    return return_str
+            logging.warning("Unknown mapping: " + m)
+            continue
+        triples.append((term, SKOS.exactMatch, mapped_term))
+    return triples
 
 
-def get_canonical_label(num_list, denom_list, lang="en"):
+def get_canonical_label(num_list: List[dict], denom_list: List[dict], lang: str = "en") -> str:
+    """Use the processed numerators and denominators from a unit input to create a label."""
     if not denom_list:
         # No denominators
         return " ".join([n[f"label_{lang}"] for n in num_list])
@@ -244,9 +239,14 @@ def get_canonical_label(num_list, denom_list, lang="en"):
 
 
 def get_canonical_definition(
-    num_list, denom_list, ucum_si, unit_prefixes, unit_exponents, lang="en"
-):
-    """"""
+    num_list: List[dict],
+    denom_list: List[dict],
+    ucum_si: dict,
+    unit_prefixes: dict,
+    unit_exponents: dict,
+    lang: str = "en",
+) -> Optional[str]:
+    """Used the processed numerators and denominators from a unit to create a definition."""
     if not denom_list and len(num_list) == 1 and num_list[0]["exponent"] == 1:
         # No denominators and an SI base with no exponent
         prefix = num_list[0].get("prefix", "")
@@ -305,7 +305,7 @@ def get_canonical_definition(
     return None
 
 
-def get_canonical_si_code(num_list, denom_list):
+def get_canonical_si_code(num_list: List[dict], denom_list: List[dict]) -> Optional[str]:
     # TODO: use a dict of exponents mapping to f string superscript nums to write out superscript
     #       OR use the prefix numbers
     return_lst = []
@@ -323,7 +323,7 @@ def get_canonical_si_code(num_list, denom_list):
     return " ".join(return_lst)
 
 
-def get_canonical_ucum_code(num_list, denom_list):
+def get_canonical_ucum_code(num_list: List[dict], denom_list: List[dict]) -> str:
     return_lst = []
     for n in num_list:
         if str(n["exponent"]) == "1":
@@ -335,7 +335,13 @@ def get_canonical_ucum_code(num_list, denom_list):
     return ".".join(return_lst)
 
 
-def get_definition_parts(units_list, umuc_si, unit_prefixes, unit_exponents, lang="en"):
+def get_definition_parts(
+    units_list: List[dict],
+    umuc_si: dict,
+    unit_prefixes: dict,
+    unit_exponents: dict,
+    lang: str = "en",
+) -> Optional[List[str]]:
     """"""
     return_lst = []
     for u in units_list:
@@ -367,16 +373,18 @@ def get_definition_parts(units_list, umuc_si, unit_prefixes, unit_exponents, lan
     return return_lst
 
 
-def get_exponent(unit, unit_exponents, lang="en"):
+def get_exponent(result: dict, unit_exponents: dict, lang: str = "en") -> Optional[str]:
     """"""
-    power = str(unit["exponent"]).replace("-", "")
+    power = str(result["exponent"]).replace("-", "")
     power_details = unit_exponents.get(power)
     if not power_details:
         return None
     return power_details.get(f"label_{lang}")
 
 
-def get_label_parts(result, ucum_si, unit_prefixes, unit_exponents, lang="en"):
+def get_label_parts(
+    result: dict, ucum_si: dict, unit_prefixes: dict, unit_exponents: dict, lang: str = "en"
+) -> Optional[str]:
     unit_details = ucum_si.get(result["unit"])
     if not unit_details:
         logging.error("No 'unit' entry in results:\n" + json.dumps(result, indent=4))
@@ -402,7 +410,7 @@ def get_label_parts(result, ucum_si, unit_prefixes, unit_exponents, lang="en"):
     return power + " " + prefix + unit
 
 
-def get_si_ucum_list(dict_list):
+def get_si_ucum_list(dict_list: List[dict]) -> List[str]:
     """
     Create permutations of possible UCUM strings for input unit list
     E.g., 'm.s-1' -> ['m.s-1', 's-1.m']
@@ -430,7 +438,7 @@ def get_si_ucum_list(dict_list):
     return return_list
 
 
-def get_symbol_code(result, ucum_si):
+def get_symbol_code(result: dict, ucum_si: dict) -> Optional[str]:
     """
     Get a code str based on prefix and unit
     """
@@ -444,31 +452,7 @@ def get_symbol_code(result, ucum_si):
     return pref + unit
 
 
-def lookahead(iterable):
-    """Pass through all values from the given iterable, augmented by the
-    information if there are more values to come after the current one
-    (True), or if it is the last value (False).
-    https://stackoverflow.com/questions/1630320/what-is-the-pythonic-way-to-detect-the-last-element-in-a-for-loop
-    """
-    # Get an iterator and pull the first value.
-    it = iter(iterable)
-    last = next(it)
-    # Run the iterator to exhaustion (starting from the second value).
-    for val in it:
-        # Report the *previous* value (more to come).
-        try:
-            yield last, True
-            last = val
-        except StopIteration:
-            return
-    # Report the last value.
-    try:
-        yield last, False
-    except StopIteration:
-        return
-
-
-def map_ucum_codes(ucum_list, ontology_mapping_list):
+def map_ucum_codes(ucum_list: List[str], ontology_mapping_list: List[dict]) -> List[str]:
     """
     Temporary lookup to UCUM to ontology mappings. Later version will use the phase 2
     UCUM parser to parse the UCUM mappings (first column at least) and convert those to
@@ -482,7 +466,7 @@ def map_ucum_codes(ucum_list, ontology_mapping_list):
     return return_list
 
 
-def process_result(result, original):
+def process_result(result: dict, original: str) -> dict:
     """
     Removes operators "." or "/" to get this back `'operator': '.',`
     Deals with start = "/" special case
