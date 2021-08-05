@@ -6,7 +6,7 @@ here = path.abspath(path.dirname(__file__))
 with open(here + "/README.md", "r") as fh:
     long_description = fh.read()
 
-install_requires = ["lark-parser"]
+install_requires = ["lark-parser", "rdflib"]
 
 test_requires = []
 
