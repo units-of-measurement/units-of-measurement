@@ -1,0 +1,112 @@
+﻿@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix IAO: <http://purl.obolibrary.org/obo/IAO_> .
+@prefix unit: <https://w3id.org/units/> .
+@prefix UO: <http://purl.obolibrary.org/obo/UO_> .
+@prefix OM: <http://www.ontology-of-units-of-measure.org/resource/om-2/> .
+@prefix QUDT: <http://qudt.org/vocab/unit/> .
+@prefix OBOE: <http://ecoinformatics.org/oboe/oboe.1.2/oboe-standards.owl#> .
+@prefix NERC_P06: <http://vocab.nerc.ac.uk/collection/P06/current/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+
+IAO:0000115 a owl:AnnotationProperty ;
+	rdfs:label "definition" .
+
+unit:L
+  a owl:NamedIndividual ;
+  rdfs:label "litre"@en ;
+  IAO:0000115 "A unit which 1) is a unit of volume, 2) is a non-SI but is accepted accepted for use with the SI Units and 2) is equal to 10⁻³ cubic metre."@en ;
+  unit:SI_code "L" ;
+  unit:ucum_code "L" ;
+  skos:exactMatch QUDT:L ;
+  skos:exactMatch OM:litre ;
+  skos:exactMatch UO:0000099 ;
+  skos:exactMatch OBOE:Liter ;
+  skos:exactMatch NERC_P06:ULIT .
+
+unit:Cel
+  a owl:NamedIndividual ;
+  rdfs:label "degree Celsius"@en ;
+  IAO:0000115 "A special named SI unit which 1) is a unit of temperature and 2) is equal to a one kelvin."@en ;
+  unit:SI_code "°C" ;
+  unit:ucum_code "Cel" ;
+  skos:exactMatch QUDT:DEG_C ;
+  skos:exactMatch OM:degreeCelsius ;
+  skos:exactMatch UO:0000027 ;
+  skos:exactMatch OBOE:Celsius ;
+  skos:exactMatch NERC_P06:UPAA .
+
+unit:Ohm
+  a owl:NamedIndividual ;
+  rdfs:label "ohm"@en ;
+  IAO:0000115 "A special named SI unit which 1) is a unit of electric resistance and 2) is equal to a kilogram square metre per square ampere cubic second."@en ;
+  unit:SI_code "Ω" ;
+  unit:ucum_code "Ohm" ;
+  skos:exactMatch QUDT:OHM ;
+  skos:exactMatch OM:ohm ;
+  skos:exactMatch NERC_P06:UOHM .
+
+unit:deg
+  a owl:NamedIndividual ;
+  rdfs:label "plane angle degree"@en ;
+  IAO:0000115 "A unit which 1) is a unit of plane and phase angle, 2) is a non-SI but is accepted accepted for use with the SI Units and 2) is equal to π/180 radian."@en ;
+  unit:SI_code "°" ;
+  unit:ucum_code "deg" ;
+  skos:exactMatch QUDT:DEG ;
+  skos:exactMatch OM:degree ;
+  skos:exactMatch UO:0000185 ;
+  skos:exactMatch OBOE:Degree ;
+  skos:exactMatch NERC_P06:UAAA .
+
+unit:%27
+  a owl:NamedIndividual ;
+  rdfs:label "plane angle minute"@en ;
+  IAO:0000115 "A unit which 1) is a unit of plane and phase angle, 2) is a non-SI but is accepted accepted for use with the SI Units and 2) is equal to π/ 10800 radian."@en ;
+  unit:SI_code "′" ;
+  unit:ucum_code "'" ;
+  skos:exactMatch QUDT:MIN_Angle ;
+  skos:exactMatch QUDT:ARCMIN ;
+  skos:exactMatch OM:minute-Angle ;
+  skos:exactMatch NERC_P06:UAMN .
+
+unit:%27%27
+  a owl:NamedIndividual ;
+  rdfs:label "plane angle second"@en ;
+  IAO:0000115 "A unit which 1) is a unit of plane and phase angle, 2) is a non-SI but is accepted accepted for use with the SI Units and 2) is equal to π/ 648000 radian."@en ;
+  unit:SI_code "′′" ;
+  unit:ucum_code "''" ;
+  skos:exactMatch QUDT:ARCSEC ;
+  skos:exactMatch OM:second-Angle .
+
+unit:m%27%27
+  a owl:NamedIndividual ;
+  rdfs:label "milliplane angle second"@en ;
+  IAO:0000115 "A unit which is equal to 10⁻³ plane angle second."@en ;
+  unit:SI_code "m′′" ;
+  unit:ucum_code "m''" ;
+  skos:exactMatch OM:millisecond-Angle .
+
+unit:ar
+  a owl:NamedIndividual ;
+  rdfs:label "are"@en ;
+  IAO:0000115 "A unit which 1) is a unit of area, 2) is a non-SI but is accepted accepted for use with the SI Units and 2) is equal to 10⁴ square metre."@en ;
+  unit:SI_code "a" ;
+  unit:ucum_code "ar" ;
+  skos:exactMatch QUDT:ARE ;
+  skos:exactMatch OM:are ;
+  skos:exactMatch OBOE:Are .
+
+unit:har
+  a owl:NamedIndividual ;
+  rdfs:label "hectare"@en ;
+  IAO:0000115 "A unit which is equal to 10² are."@en ;
+  unit:SI_code "ha" ;
+  unit:ucum_code "har" ;
+  skos:exactMatch QUDT:HA ;
+  skos:exactMatch OM:hectare ;
+  skos:exactMatch UO:0010010 ;
+  skos:exactMatch OBOE:Hectare ;
+  skos:exactMatch NERC_P06:HCTR .
+

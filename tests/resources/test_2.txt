@@ -1,0 +1,10 @@
+L
+Cel
+Ohm
+deg
+'
+''
+m'
+m''
+ar
+har

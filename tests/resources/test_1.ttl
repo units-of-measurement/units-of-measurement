@@ -1,0 +1,169 @@
+﻿@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix IAO: <http://purl.obolibrary.org/obo/IAO_> .
+@prefix unit: <https://w3id.org/units/> .
+@prefix UO: <http://purl.obolibrary.org/obo/UO_> .
+@prefix OM: <http://www.ontology-of-units-of-measure.org/resource/om-2/> .
+@prefix QUDT: <http://qudt.org/vocab/unit/> .
+@prefix OBOE: <http://ecoinformatics.org/oboe/oboe.1.2/oboe-standards.owl#> .
+@prefix NERC_P06: <http://vocab.nerc.ac.uk/collection/P06/current/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+
+IAO:0000115 a owl:AnnotationProperty ;
+	rdfs:label "definition" .
+
+unit:A
+  a owl:NamedIndividual ;
+  rdfs:label "ampere"@en ;
+  IAO:0000115 "An SI base unit which 1) is the SI unit of electric current and 2) is defined by taking the fixed numerical value of the elementary charge, e, to be 1.602 176 634 × 10⁻¹⁹ when expressed in the unit coulomb, which is equal to an ampere second, where the second is defined in terms of ∆νCs."@en ;
+  unit:SI_code "A" ;
+  unit:ucum_code "A" ;
+  skos:exactMatch QUDT:A ;
+  skos:exactMatch OM:ampere ;
+  skos:exactMatch UO:0000011 ;
+  skos:exactMatch OBOE:Ampere ;
+  skos:exactMatch NERC_P06:AMPB .
+
+unit:pN2
+  a owl:NamedIndividual ;
+  rdfs:label "square piconewton"@en ;
+  IAO:0000115 "A unit which is equal to 10⁻¹² square newton."@en ;
+  unit:SI_code "pN2" ;
+  unit:ucum_code "pN2" .
+
+unit:N2
+  a owl:NamedIndividual ;
+  rdfs:label "square newton"@en ;
+  IAO:0000115 "A unit which is equal to 1 square newton."@en ;
+  unit:SI_code "N2" ;
+  unit:ucum_code "N2" .
+
+unit:m
+  a owl:NamedIndividual ;
+  rdfs:label "metre"@en ;
+  IAO:0000115 "An SI base unit which 1) is the SI unit of length and 2) is defined by taking the fixed numerical value of the speed of light in vacuum, c, to be 299 792 458 when expressed in the unit metre per second, where the second is defined in terms of the caesium frequency ∆νCs."@en ;
+  unit:SI_code "m" ;
+  unit:ucum_code "m" ;
+  skos:exactMatch QUDT:M ;
+  skos:exactMatch OM:metre ;
+  skos:exactMatch UO:0000008 ;
+  skos:exactMatch OBOE:Meter ;
+  skos:exactMatch NERC_P06:ULAA .
+
+unit:ng
+  a owl:NamedIndividual ;
+  rdfs:label "nanogram"@en ;
+  IAO:0000115 "A unit which is equal to 10⁻⁹ gram."@en ;
+  unit:SI_code "ng" ;
+  unit:ucum_code "ng" ;
+  skos:exactMatch QUDT:NanoGM ;
+  skos:exactMatch OM:nanogram ;
+  skos:exactMatch UO:0000024 ;
+  skos:exactMatch OBOE:Nanogram ;
+  skos:exactMatch NERC_P06:UNPI .
+
+unit:Mkat
+  a owl:NamedIndividual ;
+  rdfs:label "megakatal"@en ;
+  IAO:0000115 "A unit which is equal to 10⁶ katal."@en ;
+  unit:SI_code "Mkat" ;
+  unit:ucum_code "Mkat" ;
+  skos:exactMatch OM:megakatal .
+
+unit:g.mm
+  a owl:NamedIndividual ;
+  rdfs:label "gram millimetre"@en ;
+  IAO:0000115 "A unit which is equal to 1 gram by 10⁻³ metre."@en ;
+  unit:SI_code "g mm" ;
+  unit:ucum_code "g.mm" ;
+  skos:exactMatch QUDT:GM-MilliM .
+
+unit:cd.m-2
+  a owl:NamedIndividual ;
+  rdfs:label "candela per square metre"@en ;
+  IAO:0000115 "A unit which is equal to 1 candela per 1 square metre."@en ;
+  unit:SI_code "cd m-2" ;
+  unit:ucum_code "cd.m-2" ;
+  skos:exactMatch QUDT:CD-PER-M2 ;
+  skos:exactMatch OM:candelaPerSquareMetre ;
+  skos:exactMatch UO:0000085 .
+
+unit:d-1
+  a owl:NamedIndividual ;
+  rdfs:label "reciprocal day"@en ;
+  IAO:0000115 "A unit which is equal to the reciprocal of 1 day."@en ;
+  unit:SI_code "d-1" ;
+  unit:ucum_code "d-1" ;
+  skos:exactMatch QUDT:PER-DAY ;
+  skos:exactMatch OM:reciprocalDay ;
+  skos:exactMatch NERC_P06:UPDY .
+
+unit:um-3
+  a owl:NamedIndividual ;
+  rdfs:label "reciprocal cubic micrometre"@en ;
+  IAO:0000115 "A unit which is equal to the reciprocal of 10⁻⁶ cubic metre."@en ;
+  unit:SI_code "um-3" ;
+  unit:ucum_code "um-3" .
+
+unit:A2.s4.kg-1.m-2
+  a owl:NamedIndividual ;
+  rdfs:label "square ampere quartic second per kilogram square metre"@en ;
+  IAO:0000115 "A unit which is equal to 1 square ampere by 1 quartic second per 10³ gram by 1 square metre."@en ;
+  unit:SI_code "A2 s4 kg-1 m-2" ;
+  unit:ucum_code "A2.s4.kg-1.m-2" .
+
+unit:s-1
+  a owl:NamedIndividual ;
+  rdfs:label "reciprocal second"@en ;
+  IAO:0000115 "A unit which is equal to the reciprocal of 1 second."@en ;
+  unit:SI_code "s-1" ;
+  unit:ucum_code "s-1" ;
+  skos:exactMatch QUDT:SAMPLE-PER-SEC ;
+  skos:exactMatch QUDT:PER-SEC ;
+  skos:exactMatch OM:reciprocalSecond-Time ;
+  skos:exactMatch NERC_P06:PRSC .
+
+unit:A.s
+  a owl:NamedIndividual ;
+  rdfs:label "ampere second"@en ;
+  IAO:0000115 "A unit which is equal to 1 ampere by 1 second."@en ;
+  unit:SI_code "A s" ;
+  unit:ucum_code "A.s" ;
+  skos:exactMatch QUDT:A-SEC ;
+  skos:exactMatch OM:second-TimeAmpere .
+
+unit:kg
+  a owl:NamedIndividual ;
+  rdfs:label "kilogram"@en ;
+  IAO:0000115 "An SI base unit which 1) is the SI unit of mass and 2) is defined by taking the fixed numerical value of the Planck constant, h, to be 6.626 070 15 × 10⁻³⁴ when expressed in the unit joule second, which is equal to kilogram square metre per second, where the metre and the second are defined in terms of c and ∆νCs."@en ;
+  unit:SI_code "kg" ;
+  unit:ucum_code "kg" ;
+  skos:exactMatch QUDT:KiloGM ;
+  skos:exactMatch OM:kilogram ;
+  skos:exactMatch UO:0000009 ;
+  skos:exactMatch OBOE:Kilogram ;
+  skos:exactMatch NERC_P06:KGXX .
+
+unit:mg-1.T-1
+  a owl:NamedIndividual ;
+  rdfs:label "reciprocal milligram tesla"@en ;
+  IAO:0000115 "A unit which is equal to the reciprocal of 10⁻³ gram by 1 tesla."@en ;
+  unit:SI_code "mg-1 T-1" ;
+  unit:ucum_code "mg-1.T-1" .
+
+unit:nSv-3
+  a owl:NamedIndividual ;
+  rdfs:label "reciprocal cubic nanosievert"@en ;
+  IAO:0000115 "A unit which is equal to the reciprocal of 10⁻⁹ cubic sievert."@en ;
+  unit:SI_code "nSv-3" ;
+  unit:ucum_code "nSv-3" .
+
+unit:kg-2.nSv-3
+  a owl:NamedIndividual ;
+  rdfs:label "reciprocal square kilogram cubic nanosievert"@en ;
+  IAO:0000115 "A unit which is equal to the reciprocal of 10³ square gram by 10⁻⁹ cubic sievert."@en ;
+  unit:SI_code "kg-2 nSv-3" ;
+  unit:ucum_code "kg-2.nSv-3" .
+
