@@ -37,6 +37,8 @@ Optional arguments:
 * `-l`/`--lang`: the language used for input labels and definitions. The default is `en`. Note that output definitons are currently only in English.
 * `-m`/`--mappings`: see [Ontology Mapping Tables](#ontology-mapping-tables). You may provide multiple mapping tables with extra `-m` options.
 
+### Input Tables
+
 #### SI Mapping Table
 
 This table can be found [here](https://github.com/ontodev/units/blob/main/tests/resources/si_input.csv).
