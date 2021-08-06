@@ -1,6 +1,6 @@
 # units
 
-[Initial testing repository](https://github.com/kaiiam/UO_revamp) see `nc_name_script` directory. 
+`units` converts UCUM codes to linked data. [Initial testing repository](https://github.com/kaiiam/UO_revamp), see `nc_name_script` directory.
 
 ## Getting Started
 
