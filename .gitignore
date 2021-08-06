@@ -109,6 +109,10 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+_venv
+
+# Pycharm project settings
+.idea
 
 # Spyder project settings
 .spyderproject

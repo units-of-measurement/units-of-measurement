@@ -1,6 +1,7 @@
 import csv
 
 from argparse import ArgumentParser
+from collections import defaultdict
 from .convert import convert
 
 ENCODING = "utf-8-sig"
@@ -15,11 +16,9 @@ def main():
     parser.add_argument("-o", "--output", help="Output file", required=True)
     parser.add_argument("-f", "--format", help="Output format: ttl or json-ld (default: ttl)")
     parser.add_argument("-l", "--lang", help="Language for annotations (default: en)", default="en")
-    parser.add_argument("-O", "--om-mappings", help="")
-    parser.add_argument("-Q", "--qudt-mappings", help="")
-    parser.add_argument("-U", "--uo-mappings", help="")
-    parser.add_argument("-B", "--oboe-mappings", help="")
-    parser.add_argument("-N", "--nerc-mappings", help="")
+    parser.add_argument(
+        "-m", "--mappings", help="External ontology term to UCUM code mappings", action="append"
+    )
     args = parser.parse_args()
 
     # Get the format from args or guess it from the output file
@@ -73,14 +72,8 @@ def main():
         for row in reader:
             unit_exponents[row["power"]] = {label_key: row[label_key]}
 
-    mappings = []
-    for fp in [
-        args.om_mappings,
-        args.qudt_mappings,
-        args.uo_mappings,
-        args.oboe_mappings,
-        args.nerc_mappings,
-    ]:
+    mappings = defaultdict(list)
+    for fp in args.mappings:
         if not fp:
             continue
         sep = "\t"
@@ -89,7 +82,10 @@ def main():
         with open(fp, "r", encoding=ENCODING) as f:
             reader = csv.DictReader(f, delimiter=sep)
             for row in reader:
-                mappings.append(row)
+                iri = row["IRI"]
+                if iri not in mappings:
+                    mappings[iri] = []
+                mappings[iri].append(row["UCUM"])
 
     gout = convert(inputs, ucum_si, unit_prefixes, unit_exponents, mappings, lang=args.lang)
     gout.serialize(args.output, format=outfmt)

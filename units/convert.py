@@ -51,7 +51,7 @@ def convert(
     ucum_si: dict,
     unit_prefixes: dict,
     unit_exponents: dict,
-    mappings: list,
+    mappings: dict,
     lang="en",
 ) -> Graph:
     """
@@ -62,7 +62,7 @@ def convert(
     :param unit_prefixes: prefix symbol -> label and prefix base 10 number
                     (e.g., "Y": {"label_en": "yotta", "number": 24})
     :param unit_exponents: dict of power to label (e.g., 2: "square")
-    :param mappings: ontology mappings
+    :param mappings: mapped ontology term IRI -> list of UCUM codes
     :param lang: language for annotations (default: en)
     :return: rdflib graph object
     """
@@ -152,7 +152,11 @@ def convert(
 
         # Map UCUM codes to external ontologies
         # TODO: change this to use mappings of UCUM strings by calling phase 2 on Simon's mappings
-        mappings_complete = map_ucum_codes(ucum_si_list, mappings)
+        mappings_complete = [
+            iri
+            for iri, ucum_codes in mappings.items()
+            if set(ucum_si_list).intersection(set(ucum_codes))
+        ]
 
         # Format TTL from parser results
         triples = get_triples(ucum_code, label, si_code, definition, mappings_complete, lang=lang)
@@ -450,20 +454,6 @@ def get_symbol_code(result: dict, ucum_si: dict) -> Optional[str]:
     unit = unit_details["symbol"]
     pref = result.get("prefix", "")
     return pref + unit
-
-
-def map_ucum_codes(ucum_list: List[str], ontology_mapping_list: List[dict]) -> List[str]:
-    """
-    Temporary lookup to UCUM to ontology mappings. Later version will use the phase 2
-    UCUM parser to parse the UCUM mappings (first column at least) and convert those to
-    canonical UCUM string via our function to do so, then look those up based on input
-    """
-    return_list = []
-    for u in ucum_list:
-        for x in ontology_mapping_list:
-            if u == x["UCUM1"] or u == x["UCUM2"] or u == x["UCUM3"] or u == x["UCUM4"]:
-                return_list.append(x["IRI"])
-    return return_list
 
 
 def process_result(result: dict, original: str) -> dict:
