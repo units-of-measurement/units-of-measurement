@@ -35,7 +35,9 @@ Required arguments:
 Optional arguments:
 * `-f`/`--format`: output format (`ttl`, `json-ld`, or `html`). The default output is TTL, but the output format is guessed based on the file extension of the OUTPUT file. This option can be used to override that.
 * `-l`/`--lang`: the language used for input labels and definitions. The default is `en`. Note that output definitons are currently only in English.
-* `-m`/`--mappings`: a table mapping UCUM codes to external ontology terms, see [Ontology Mapping Tables](#ontology-mapping-tables). You may provide multiple mapping tables with extra `-m` options (`-m table1.tsv -m table2.tsv`)
+* `-m`/`--mappings`: see [Ontology Mapping Tables](#ontology-mapping-tables). You may provide multiple mapping tables with extra `-m` options.
+
+### Input Tables
 
 #### SI Mapping Table
 
