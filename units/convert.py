@@ -2,12 +2,12 @@ import json
 import logging
 import re
 
-from collections import Iterable
+from collections import defaultdict, Iterable
 from itertools import permutations
 from typing import List, Optional
 
 from lark.exceptions import LarkError
-from rdflib import Graph, Literal, Namespace, OWL, RDF, RDFS, SKOS
+from rdflib import Graph, Literal, Namespace, OWL, RDF, RDFS, SKOS, URIRef
 from urllib.parse import quote as url_quote
 from .grammar import si_grammar, UnitsTransformer
 
@@ -32,6 +32,8 @@ ONTOLOGY_PREFIXES = {
     "OM": "http://www.ontology-of-units-of-measure.org/resource/om-2/",
     "owl": "http://www.w3.org/2002/07/owl#",
     "QUDT": "http://qudt.org/vocab/unit/",
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
     "skos": "http://www.w3.org/2004/02/skos/core#",
     "unit": "https://w3id.org/units/",
     "UO": "http://purl.obolibrary.org/obo/UO_",
@@ -177,53 +179,6 @@ def flatten(x):
         return [x]
 
 
-def get_triples(
-    ucum_code: str, label: str, si_code: str, definition: str, mappings: List[str], lang: str = "en"
-) -> List[tuple]:
-    # Create an identifier from the UCUM code
-    term = UNIT[url_quote(ucum_code)]
-    # Assert that this is an owl instance
-    triples = [(term, RDF.type, OWL.NamedIndividual)]
-
-    # Add annotations
-    if label:
-        triples.append((term, RDFS.label, Literal(label, lang=lang)))
-    if definition:
-        triples.append((term, IAO["0000115"], Literal(definition, lang=lang)))
-    if si_code:
-        triples.append((term, UNIT.SI_code, Literal(si_code)))
-    if ucum_code:
-        triples.append((term, UNIT.ucum_code, Literal(ucum_code)))
-
-    # Add mappings (if present)
-    for m in mappings:
-        if re.search(QUDT_REGEX, m):
-            match = re.search(QUDT_REGEX, m)
-            qudt_id = match.group(2)
-            mapped_term = QUDT[qudt_id]
-        elif re.search(OM_REGEX, m):
-            match = re.search(OM_REGEX, m)
-            om_id = match.group(2)
-            mapped_term = OM[om_id]
-        elif re.search(UO_REGEX, m):
-            match = re.search(UO_REGEX, m)
-            uo_id = match.group(2)
-            mapped_term = UO[uo_id]
-        elif re.search(OBOE_REGEX, m):
-            match = re.search(OBOE_REGEX, m)
-            oboe_id = match.group(2)
-            mapped_term = OBOE[oboe_id]
-        elif re.search(NERC_REGEX, m):
-            match = re.search(NERC_REGEX, m)
-            nerc_id = match.group(2)
-            mapped_term = NERC[nerc_id]
-        else:
-            logging.warning("Unknown mapping: " + m)
-            continue
-        triples.append((term, SKOS.exactMatch, mapped_term))
-    return triples
-
-
 def get_canonical_label(num_list: List[dict], denom_list: List[dict], lang: str = "en") -> str:
     """Use the processed numerators and denominators from a unit input to create a label."""
     if not denom_list:
@@ -339,6 +294,13 @@ def get_canonical_ucum_code(num_list: List[dict], denom_list: List[dict]) -> str
     return ".".join(return_lst)
 
 
+def get_curie(iri):
+    for ns, base in ONTOLOGY_PREFIXES.items():
+        if iri.startswith(base):
+            return iri.replace(base, ns + ":")
+    return iri
+
+
 def get_definition_parts(
     units_list: List[dict],
     umuc_si: dict,
@@ -443,9 +405,7 @@ def get_si_ucum_list(dict_list: List[dict]) -> List[str]:
 
 
 def get_symbol_code(result: dict, ucum_si: dict) -> Optional[str]:
-    """
-    Get a code str based on prefix and unit
-    """
+    """Get a code str based on prefix and unit."""
     result_unit = result["unit"]
     unit_details = ucum_si.get(result_unit)
     if not unit_details:
@@ -454,6 +414,143 @@ def get_symbol_code(result: dict, ucum_si: dict) -> Optional[str]:
     unit = unit_details["symbol"]
     pref = result.get("prefix", "")
     return pref + unit
+
+
+def get_triples(
+    ucum_code: str, label: str, si_code: str, definition: str, mappings: List[str], lang: str = "en"
+) -> List[tuple]:
+    # Create an identifier from the UCUM code
+    term = UNIT[url_quote(ucum_code)]
+    # Assert that this is an owl instance
+    triples = [(term, RDF.type, OWL.NamedIndividual)]
+
+    # Add annotations
+    if label:
+        triples.append((term, RDFS.label, Literal(label, lang=lang)))
+    if definition:
+        triples.append((term, IAO["0000115"], Literal(definition, lang=lang)))
+    if si_code:
+        triples.append((term, UNIT.SI_code, Literal(si_code)))
+    if ucum_code:
+        triples.append((term, UNIT.ucum_code, Literal(ucum_code)))
+
+    # Add mappings (if present)
+    for m in mappings:
+        if re.search(QUDT_REGEX, m):
+            match = re.search(QUDT_REGEX, m)
+            qudt_id = match.group(2)
+            mapped_term = QUDT[qudt_id]
+        elif re.search(OM_REGEX, m):
+            match = re.search(OM_REGEX, m)
+            om_id = match.group(2)
+            mapped_term = OM[om_id]
+        elif re.search(UO_REGEX, m):
+            match = re.search(UO_REGEX, m)
+            uo_id = match.group(2)
+            mapped_term = UO[uo_id]
+        elif re.search(OBOE_REGEX, m):
+            match = re.search(OBOE_REGEX, m)
+            oboe_id = match.group(2)
+            mapped_term = OBOE[oboe_id]
+        elif re.search(NERC_REGEX, m):
+            match = re.search(NERC_REGEX, m)
+            nerc_id = match.group(2)
+            mapped_term = NERC[nerc_id]
+        else:
+            logging.warning("Unknown mapping: " + m)
+            continue
+        triples.append((term, SKOS.exactMatch, mapped_term))
+    return triples
+
+
+def graph_to_html(gout: Graph) -> str:
+    """Convert an rdflib Graph containing UCUM triples to HTML+RDFa."""
+    # Create the RDFa prefix string
+    prefixes = []
+    for ns, base in ONTOLOGY_PREFIXES.items():
+        prefixes.append(f"{ns}: {base}")
+    prefixes = "\n".join(prefixes)
+    html = [f'<div prefix="{prefixes}">']
+
+    # Get all labels
+    labels = {}
+    for node, val in gout.subject_objects(RDFS.label):
+        if labels:
+            labels[str(node)] = str(val)
+        else:
+            labels[str(node)] = str(val)
+
+    # Get the attributes of all individuals (the UCUM codes)
+    node_attributes = []
+    for node in gout.subjects(RDF.type, OWL.NamedIndividual):
+        iri = str(node)
+        predicate_values = defaultdict(set)
+        predicate_objects = defaultdict(set)
+        for predicate, obj in gout.predicate_objects(node):
+            p_iri = str(predicate)
+            if isinstance(obj, Literal):
+                if p_iri not in predicate_values:
+                    predicate_values[p_iri] = set()
+                predicate_values[p_iri].add(str(obj))
+            else:
+                if p_iri not in predicate_objects:
+                    predicate_objects[p_iri] = set()
+                predicate_objects[p_iri].add(str(obj))
+        node_curie = get_curie(iri)
+        node_label = labels.get(iri, node_curie)
+        node_attributes.append(
+            {
+                "iri": iri,
+                "curie": node_curie,
+                "label": node_label,
+                "values": predicate_values,
+                "objects": predicate_objects,
+            }
+        )
+
+    # For each node, generate the HTML
+    for attributes in sorted(node_attributes, key=lambda k: k["label"]):
+        iri = attributes["iri"]
+        node_curie = attributes["curie"]
+        node_label = attributes["label"]
+        predicate_objects = attributes["objects"]
+        predicate_values = attributes["values"]
+        html.append(f'<div resource="{node_curie}">')
+        html.append(f'  <h3><a href="{iri}">{node_label}</a></h3>')
+        html.append("  <ul>")
+        # Handle objects
+        for predicate, objects in predicate_objects.items():
+            predicate_curie = get_curie(predicate)
+            predicate_label = labels.get(predicate, predicate_curie)
+            html.append("    <li>")
+            html.append(f'      <a href="{predicate}">{predicate_label}</a>')
+            html.append("      <ul>")
+            for o in objects:
+                object_curie = get_curie(o)
+                object_label = labels.get(o, object_curie)
+                html.append("        <li>")
+                html.append(
+                    f'{10 * " "}<a rel="{predicate_curie}" resource="{object_curie}" href="{o}">'
+                )
+                html.append((12 * " ") + object_label)
+                html.append(f'{10 * " "}</a>')
+                html.append("        </li>")
+            html.append("      </ul>")
+        # Handle literals
+        for predicate, values in predicate_values.items():
+            predicate_curie = get_curie(predicate)
+            predicate_label = labels.get(predicate, predicate_curie)
+            html.append("    <li>")
+            html.append(f'      <a href="{predicate}">{predicate_label}</a>')
+            html.append("      <ul>")
+            for val in values:
+                html.append(f'        <li><span property="{predicate_curie}">{val}</span></li>')
+            html.append("      </ul>")
+            html.append("    </li>")
+        html.append("  </ul>")
+        html.append("</div>")
+    html.append("</div>")
+    return "\n".join(html)
 
 
 def process_result(result: dict, original: str) -> dict:
