@@ -27,4 +27,5 @@ setup(
     test_suite="pytest",
     packages=find_packages(exclude="tests"),
     entry_points={"console_scripts": ["units=units.cli:main"]},
+    package_data={"units": ["resources/*.csv"]}
 )

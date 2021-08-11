@@ -22,26 +22,26 @@ units -h
 ## Usage
 
 ```
-units -i INPUT -s SI -p PREFIXES -e EXPONENTS -o OUTPUT
+units INPUT > OUTPUT
 ```
 
-Required arguments:
-* `-i`/`--input`: the input file containing a list of UCUM codes
-* `-s`/`--si`: see [SI Mapping Table](#si-mapping-table)
-* `-p`/`--prefixes`: see [Prefixes Table](#prefixes-table)
-* `-e`/`--exponents`: see [Exponents Table](#exponents-table)
-* `-o`/`--output`: the output file, either Turtle or JSON-LD
+... where the `INPUT` is the path to a file containing a list of UCUM codes to convert to linked data.
 
 Optional arguments:
-* `-f`/`--format`: output format (`ttl`, `json-ld`, or `html`). The default output is TTL, but the output format is guessed based on the file extension of the OUTPUT file. This option can be used to override that.
-* `-l`/`--lang`: the language used for input labels and definitions. The default is `en`. Note that output definitons are currently only in English.
-* `-m`/`--mappings`: see [Ontology Mapping Tables](#ontology-mapping-tables). You may provide multiple mapping tables with extra `-m` options.
+* `-s`/`--si`: see [SI Mapping Table](#si-mapping-table). If not included, the default is [this file](https://github.com/ontodev/units/tree/main/units/resources/si_input.csv).
+* `-p`/`--prefixes`: see [Prefixes Table](#prefixes-table). If not included, the default is [this file](https://github.com/ontodev/units/tree/main/units/resources/prefixes.csv).
+* `-e`/`--exponents`: see [Exponents Table](#exponents-table). If not included, the default is [this file](https://github.com/ontodev/units/tree/main/units/resources/exponents.csv).
+* `-m`/`--mappings`: see [Ontology Mapping Tables](#ontology-mapping-tables). If not included, the default is [this file](https://github.com/ontodev/units/tree/main/units/resources/mappings.csv).
+* `-x`/`--exclude-mappings`: If this flag is included, exclude ontology mappings from the output
+* `-f`/`--format`: output format (`ttl`, `json-ld`, or `html`). If not included, the default is `ttl`.
+* `-l`/`--lang`: the language used for input labels and definitions. The default is `en` and if you specify a different language, you must include your own input files (above args). Note that output definitons are currently only in English.
+
 
 ### Input Tables
 
 #### SI Mapping Table
 
-This table can be found [here](https://github.com/ontodev/units/blob/main/tests/resources/si_input.csv).
+This table can be found [here](https://github.com/ontodev/units/blob/main/units/resources/si_input.csv).
 
 This table maps standard SI symbols to UCUM symbols. This file requires the following fields:
 * `UCUM_symbol`
@@ -58,7 +58,7 @@ For example (with truncated defintion):
 
 #### Prefixes Table
 
-This table can be found [here](https://github.com/ontodev/units/blob/main/tests/resources/prefixes.csv).
+This table can be found [here](https://github.com/ontodev/units/blob/main/units/resources/prefixes.csv).
 
 This table contains details for scientific prefixes and their powers. The following fields are required:
 * `label_en`: The label in English (you can replace 'en' with another lang tag if you're using a different language as specified in the command line, e.g., `label_fr`)
@@ -74,7 +74,7 @@ For example:
 
 #### Exponents Table
 
-This table can be found [here](https://github.com/ontodev/units/blob/main/tests/resources/exponents.csv).
+This table can be found [here](https://github.com/ontodev/units/blob/main/units/resources/exponents.csv).
 
 This table contains mappings between the exponent number and it's label. The following fields are required:
 * `power`: the exponent number
@@ -89,13 +89,17 @@ For example:
 
 #### Ontology Mapping Tables
 
-These tables map UCUM codes to ontology terms. Currently, we have the following mappings:
-* [OM](https://github.com/ontodev/units/blob/main/tests/resources/om_mapping.csv)
-* [QUDT](https://github.com/ontodev/units/blob/main/tests/resources/qudt_mapping.csv)
-* [UO](https://github.com/ontodev/units/blob/main/tests/resources/uo_mapping.csv)
-* [OBOE](https://github.com/ontodev/units/blob/main/tests/resources/oboe_mapping.csv)
-* [NERC](https://github.com/ontodev/units/blob/main/tests/resources/nerc_mapping.csv)
+This table can be found [here](https://github.com/ontodev/units/blob/main/units/resources/mappings.csv).
+
+This table maps UCUM codes to ontology terms, with each row representing one mapping.
 
 These tables require the following columns:
 * `IRI`: The ontology term IRI
 * `UCUM`: The UCUM code
+
+For example:
+
+| IRI                                                  | UCUM |
+| ---------------------------------------------------- | ---- |
+| http://vocab.nerc.ac.uk/collection/P06/current/AMPB/ | A    |
+| http://qudt.org/vocab/unit/SR                        | sr   |
