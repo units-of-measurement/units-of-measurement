@@ -7,7 +7,7 @@ from itertools import permutations
 from typing import List, Optional
 
 from lark.exceptions import LarkError
-from rdflib import Graph, Literal, Namespace, OWL, RDF, RDFS, SKOS, URIRef
+from rdflib import Graph, Literal, Namespace, OWL, RDF, RDFS, SKOS
 from urllib.parse import quote as url_quote
 from .grammar import si_grammar, UnitsTransformer
 
@@ -35,7 +35,6 @@ ONTOLOGY_PREFIXES = {
     "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
     "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
     "skos": "http://www.w3.org/2004/02/skos/core#",
-    "unit": "https://w3id.org/units/",
     "UO": "http://purl.obolibrary.org/obo/UO_",
 }
 
@@ -44,7 +43,6 @@ NERC = Namespace(ONTOLOGY_PREFIXES["NERC_P06"])
 OBOE = Namespace(ONTOLOGY_PREFIXES["OBOE"])
 OM = Namespace(ONTOLOGY_PREFIXES["OM"])
 QUDT = Namespace(ONTOLOGY_PREFIXES["QUDT"])
-UNIT = Namespace(ONTOLOGY_PREFIXES["unit"])
 UO = Namespace(ONTOLOGY_PREFIXES["UO"])
 
 
@@ -54,7 +52,9 @@ def convert(
     unit_prefixes: dict,
     unit_exponents: dict,
     mappings: dict,
+    base_iri="https://w3id.org/units/",
     lang="en",
+    fail_on_err=False
 ) -> Graph:
     """
 
@@ -65,9 +65,13 @@ def convert(
                     (e.g., "Y": {"label_en": "yotta", "number": 24})
     :param unit_exponents: dict of power to label (e.g., 2: "square")
     :param mappings: mapped ontology term IRI -> list of UCUM codes
+    :param base_iri:
     :param lang: language for annotations (default: en)
+    :param fail_on_err:
     :return: rdflib graph object
     """
+    # Update prefixes with provided base IRI
+    ONTOLOGY_PREFIXES["unit"] = base_iri
     gout = Graph()
     # Add ontology prefixes
     for ns, base in ONTOLOGY_PREFIXES.items():
@@ -83,14 +87,18 @@ def convert(
         try:
             tree = si_grammar.parse(inpt)
             result = UnitsTransformer().transform(tree)
-        except LarkError:
+        except (LarkError, TypeError) as e:
+            if fail_on_err:
+                raise ValueError(f"Could not process '{inpt}' with SI parser", e)
             logging.error(f"Could not process '{inpt}' with SI parser - this input will be skipped")
             continue
 
         # Attempt to flatten the result tree
         try:
             res_flat = flatten(result)
-        except RecursionError:
+        except RecursionError as e:
+            if fail_on_err:
+                raise RecursionError(f"Could not flatten result from '{inpt}'", e)
             logging.error(f"Could not flatten result from '{inpt}' - this input will be skipped")
             continue
 
@@ -119,6 +127,8 @@ def convert(
             label = get_label_parts(u, ucum_si, unit_prefixes, unit_exponents)
             if label:
                 u[f"label_{lang}"] = label
+            else:
+                raise ValueError(f"Could not create a label for '{inpt}'")
 
             # Split numerator and denominator into two lists
             if str(u["exponent"])[0] == "-":
@@ -130,7 +140,9 @@ def convert(
         try:
             num_list = sorted(num_list, key=lambda k: (k["ucum_code"].casefold(), k))
             denom_list = sorted(denom_list, key=lambda k: (k["ucum_code"].casefold(), k))
-        except ValueError:
+        except ValueError as e:
+            if fail_on_err:
+                raise ValueError(f"Could not sort result from '{inpt}'", e)
             logging.error(f"Could not sort result from '{inpt}' - this input will be skipped")
             continue
 
@@ -147,7 +159,10 @@ def convert(
         si_code = get_canonical_si_code(num_list, denom_list)
 
         # Generate canonical UCUM code
-        ucum_code = get_canonical_ucum_code(num_list, denom_list)
+        ucum_codes = [get_canonical_ucum_code(num_list, denom_list)]
+        alt_code = get_alternative_ucum_code(ucum_codes[0])
+        if alt_code != ucum_codes[0]:
+            ucum_codes.append(alt_code)
 
         # Generate list of UCUM codes from results
         ucum_si_list = get_si_ucum_list(processed_units)
@@ -161,7 +176,7 @@ def convert(
         ]
 
         # Format TTL from parser results
-        triples = get_triples(ucum_code, label, si_code, definition, mappings_complete, lang=lang)
+        triples = get_triples(ucum_codes, label, si_code, definition, mappings_complete, lang=lang)
         for t in triples:
             gout.add(t)
     return gout
@@ -177,6 +192,29 @@ def flatten(x):
         return [a for i in x for a in flatten(i)]
     else:
         return [x]
+
+
+def get_alternative_ucum_code(ucum_code):
+    """Use the canonical UCUM code to get an alternative UCUM code. This code is not URL-safe."""
+    alt_code = []
+    idx = 0
+    for p in ucum_code.split("."):
+        m = re.match(r"([^-]+)-([0-9]+)", p)
+        if m:
+            unit = m.group(1)
+            power = m.group(2)
+            if int(power) > 1:
+                label_part = f"{unit}{power}"
+            else:
+                label_part = unit
+            if idx == 0:
+                # If the first unit is reciprocal, make sure to include the slash
+                label_part = "/" + label_part
+        else:
+            label_part = p
+        alt_code.append(label_part)
+        idx += 1
+    return "/".join(alt_code)
 
 
 def get_canonical_label(num_list: List[dict], denom_list: List[dict], lang: str = "en") -> str:
@@ -351,27 +389,28 @@ def get_exponent(result: dict, unit_exponents: dict, lang: str = "en") -> Option
 def get_label_parts(
     result: dict, ucum_si: dict, unit_prefixes: dict, unit_exponents: dict, lang: str = "en"
 ) -> Optional[str]:
-    unit_details = ucum_si.get(result["unit"])
-    if not unit_details:
-        logging.error("No 'unit' entry in results:\n" + json.dumps(result, indent=4))
-        return None
-
-    # Get unit and maybe revise prefix
-    unit = unit_details[f"label_{lang}"]
+    # Get prefix
     prefix_details = unit_prefixes.get(result["prefix"])
     if prefix_details:
         prefix = prefix_details[f"label_{lang}"]
     else:
         prefix = ""
-    if unit == "are":
-        if prefix == "hecto":
-            prefix = "hect"
-        elif prefix == "deca":
-            prefix = "dec"
+
+    # Maybe get unit
+    unit_details = ucum_si.get(result["unit"])
+    if not unit_details:
+        logging.warning("No 'unit' entry in results:\n" + json.dumps(result, indent=4))
+        unit = None
+    else:
+        unit = unit_details[f"label_{lang}"]
+        if unit == "are" and prefix in ["hecto", "deca"]:
+            prefix = prefix[:-1]
 
     # Check for an exponent & return formatted string
     power = get_exponent(result, unit_exponents, lang=lang)
-    if power is None:
+    if power is None and unit is None:
+        return prefix
+    elif power is None:
         return prefix + unit
     return power + " " + prefix + unit
 
@@ -417,10 +456,12 @@ def get_symbol_code(result: dict, ucum_si: dict) -> Optional[str]:
 
 
 def get_triples(
-    ucum_code: str, label: str, si_code: str, definition: str, mappings: List[str], lang: str = "en"
+    ucum_codes: List[str], label: str, si_code: str, definition: str, mappings: List[str], lang: str = "en"
 ) -> List[tuple]:
     # Create an identifier from the UCUM code
-    term = UNIT[url_quote(ucum_code)]
+    unit_ns = Namespace(ONTOLOGY_PREFIXES["unit"])
+    # The canonical UCUM code is the first entry in the list
+    term = unit_ns[url_quote(ucum_codes[0])]
     # Assert that this is an owl instance
     triples = [(term, RDF.type, OWL.NamedIndividual)]
 
@@ -430,9 +471,9 @@ def get_triples(
     if definition:
         triples.append((term, IAO["0000115"], Literal(definition, lang=lang)))
     if si_code:
-        triples.append((term, UNIT.SI_code, Literal(si_code)))
-    if ucum_code:
-        triples.append((term, UNIT.ucum_code, Literal(ucum_code)))
+        triples.append((term, unit_ns.SI_code, Literal(si_code)))
+    for uc in ucum_codes:
+        triples.append((term, unit_ns.ucum_code, Literal(uc)))
 
     # Add mappings (if present)
     for m in mappings:
@@ -516,7 +557,7 @@ def graph_to_html(gout: Graph) -> str:
         predicate_objects = attributes["objects"]
         predicate_values = attributes["values"]
         html.append(f'<div resource="{node_curie}">')
-        html.append(f'  <h3><a href="{iri}">{node_label}</a></h3>')
+        html.append(f'  <h3>{node_label}</h3>')
         html.append("  <ul>")
         # Handle objects
         for predicate, objects in predicate_objects.items():
