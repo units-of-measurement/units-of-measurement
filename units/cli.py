@@ -51,8 +51,14 @@ def main():
     gout = convert(inputs, ucum_si, unit_prefixes, unit_exponents, mappings, lang=args.lang)
     if outfmt == "html":
         sys.stdout.write(graph_to_html(gout))
+    elif outfmt == "json-ld":
+        jsonld_context = {}
+        for ns, base in dict(gout.namespaces()).items():
+            jsonld_context[ns] = str(base)
+        jsonld_context = {"@context": jsonld_context}
+        sys.stdout.write(str(gout.serialize(format=outfmt, context=jsonld_context), ENCODING))
     else:
-        sys.stdout.write(gout.serialize(format=outfmt))
+        sys.stdout.write(str(gout.serialize(format=outfmt), ENCODING))
 
 
 if __name__ == "__main__":

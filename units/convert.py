@@ -26,8 +26,8 @@ OBOE_REGEX = r"(http://ecoinformatics.org/oboe/oboe.1.2/oboe-standards.owl#)(.*)
 NERC_REGEX = r"(http://vocab.nerc.ac.uk/collection/P06/current/)(.*)(/)"
 
 ONTOLOGY_PREFIXES = {
-    "IAO": "http://purl.obolibrary.org/obo/IAO_",
     "NERC_P06": "http://vocab.nerc.ac.uk/collection/P06/current/",
+    "obo": "http://purl.obolibrary.org/obo/",
     "OBOE": "http://ecoinformatics.org/oboe/oboe.1.2/oboe-standards.owl#",
     "OM": "http://www.ontology-of-units-of-measure.org/resource/om-2/",
     "owl": "http://www.w3.org/2002/07/owl#",
@@ -38,8 +38,8 @@ ONTOLOGY_PREFIXES = {
     "UO": "http://purl.obolibrary.org/obo/UO_",
 }
 
-IAO = Namespace(ONTOLOGY_PREFIXES["IAO"])
 NERC = Namespace(ONTOLOGY_PREFIXES["NERC_P06"])
+OBO = Namespace(ONTOLOGY_PREFIXES["obo"])
 OBOE = Namespace(ONTOLOGY_PREFIXES["OBOE"])
 OM = Namespace(ONTOLOGY_PREFIXES["OM"])
 QUDT = Namespace(ONTOLOGY_PREFIXES["QUDT"])
@@ -78,8 +78,8 @@ def convert(
         gout.bind(ns, base)
 
     # Add definition annotation property
-    gout.add((IAO["0000115"], RDF.type, OWL.AnnotationProperty))
-    gout.add((IAO["0000115"], RDFS.label, Literal("definition")))
+    gout.add((OBO["IAO_0000115"], RDF.type, OWL.AnnotationProperty))
+    gout.add((OBO["IAO_0000115"], RDFS.label, Literal("definition")))
 
     # Process given inputs
     for inpt in inputs:
@@ -474,7 +474,7 @@ def get_triples(
     if label:
         triples.append((term, RDFS.label, Literal(label, lang=lang)))
     if definition:
-        triples.append((term, IAO["0000115"], Literal(definition, lang=lang)))
+        triples.append((term, OBO["IAO_0000115"], Literal(definition, lang=lang)))
     if si_code:
         triples.append((term, unit_ns.SI_code, Literal(si_code)))
     for uc in ucum_codes:
@@ -556,7 +556,6 @@ def graph_to_html(gout: Graph) -> str:
 
     # For each node, generate the HTML
     for attributes in sorted(node_attributes, key=lambda k: k["label"]):
-        iri = attributes["iri"]
         node_curie = attributes["curie"]
         node_label = attributes["label"]
         predicate_objects = attributes["objects"]
