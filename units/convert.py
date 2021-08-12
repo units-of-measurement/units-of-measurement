@@ -556,12 +556,14 @@ def graph_to_html(gout: Graph) -> str:
 
     # For each node, generate the HTML
     for attributes in sorted(node_attributes, key=lambda k: k["label"]):
+        iri = attributes["iri"]
         node_curie = attributes["curie"]
         node_label = attributes["label"]
         predicate_objects = attributes["objects"]
         predicate_values = attributes["values"]
         html.append(f'<div resource="{node_curie}">')
         html.append(f"  <h3>{node_label}</h3>")
+        html.append(f'  <p class="lead">{iri}</h5>')
         html.append("  <ul>")
         # Handle objects
         for predicate, objects in predicate_objects.items():
