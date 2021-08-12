@@ -54,7 +54,7 @@ def convert(
     mappings: dict,
     base_iri="https://w3id.org/units/",
     lang="en",
-    fail_on_err=False
+    fail_on_err=False,
 ) -> Graph:
     """
 
@@ -456,7 +456,12 @@ def get_symbol_code(result: dict, ucum_si: dict) -> Optional[str]:
 
 
 def get_triples(
-    ucum_codes: List[str], label: str, si_code: str, definition: str, mappings: List[str], lang: str = "en"
+    ucum_codes: List[str],
+    label: str,
+    si_code: str,
+    definition: str,
+    mappings: List[str],
+    lang: str = "en",
 ) -> List[tuple]:
     # Create an identifier from the UCUM code
     unit_ns = Namespace(ONTOLOGY_PREFIXES["unit"])
@@ -557,7 +562,7 @@ def graph_to_html(gout: Graph) -> str:
         predicate_objects = attributes["objects"]
         predicate_values = attributes["values"]
         html.append(f'<div resource="{node_curie}">')
-        html.append(f'  <h3>{node_label}</h3>')
+        html.append(f"  <h3>{node_label}</h3>")
         html.append("  <ul>")
         # Handle objects
         for predicate, objects in predicate_objects.items():
