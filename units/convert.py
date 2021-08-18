@@ -39,7 +39,6 @@ ONTOLOGY_PREFIXES = {
 }
 
 NERC = Namespace(ONTOLOGY_PREFIXES["NERC_P06"])
-OBO = Namespace(ONTOLOGY_PREFIXES["obo"])
 OBOE = Namespace(ONTOLOGY_PREFIXES["OBOE"])
 OM = Namespace(ONTOLOGY_PREFIXES["OM"])
 QUDT = Namespace(ONTOLOGY_PREFIXES["QUDT"])
@@ -76,10 +75,6 @@ def convert(
     # Add ontology prefixes
     for ns, base in ONTOLOGY_PREFIXES.items():
         gout.bind(ns, base)
-
-    # Add definition annotation property
-    gout.add((OBO["IAO_0000115"], RDF.type, OWL.AnnotationProperty))
-    gout.add((OBO["IAO_0000115"], RDFS.label, Literal("definition")))
 
     # Process given inputs
     for inpt in inputs:
@@ -474,7 +469,7 @@ def get_triples(
     if label:
         triples.append((term, RDFS.label, Literal(label, lang=lang)))
     if definition:
-        triples.append((term, OBO["IAO_0000115"], Literal(definition, lang=lang)))
+        triples.append((term, SKOS.definition, Literal(definition, lang=lang)))
     if si_code:
         triples.append((term, unit_ns.SI_code, Literal(si_code)))
     for uc in ucum_codes:
