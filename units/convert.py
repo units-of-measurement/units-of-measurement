@@ -221,28 +221,6 @@ def get_alternative_ucum_code(ucum_code):
     return "/".join(alt_code)
 
 
-def get_canonical_synonyms(
-    num_list: List[dict], denom_list: List[dict], lang: str = "en"
-) -> List[str]:
-    """"""
-    if not denom_list:
-        # No denominators
-        return get_possible_synonyms(num_list, lang=lang)
-    elif not num_list:
-        # No numerators
-        return get_possible_synonyms(denom_list, lang=lang, reciprocal=True)
-    # Mix of numerators and denominators
-    num_synonyms = get_possible_synonyms(num_list, lang=lang)
-    denom_synonyms = get_possible_synonyms(denom_list, lang=lang)
-    if not num_synonyms and not denom_synonyms:
-        return []
-    if not num_synonyms:
-        num_synonyms = [x[f"label_{lang}"] for x in num_list]
-    if not denom_synonyms:
-        denom_synonyms = [x[f"label_{lang}"] for x in denom_list]
-    return [" ".join(x) for x in product(num_synonyms, ["per"], denom_synonyms)]
-
-
 def get_canonical_label(num_list: List[dict], denom_list: List[dict], lang: str = "en") -> str:
     """Use the processed numerators and denominators from a unit input to create a label."""
     if not denom_list:
@@ -346,6 +324,29 @@ def get_canonical_si_code(num_list: List[dict], denom_list: List[dict]) -> Optio
     return " ".join(return_lst)
 
 
+def get_canonical_synonyms(
+    num_list: List[dict], denom_list: List[dict], lang: str = "en"
+) -> List[str]:
+    """Use the processed numerators and denominators from a unit input to create a list of all
+    possible synonyms."""
+    if not denom_list:
+        # No denominators
+        return get_possible_synonyms(num_list, lang=lang)
+    elif not num_list:
+        # No numerators
+        return get_possible_synonyms(denom_list, lang=lang, reciprocal=True)
+    # Mix of numerators and denominators
+    num_synonyms = get_possible_synonyms(num_list, lang=lang)
+    denom_synonyms = get_possible_synonyms(denom_list, lang=lang)
+    if not num_synonyms and not denom_synonyms:
+        return []
+    if not num_synonyms:
+        num_synonyms = [x[f"label_{lang}"] for x in num_list]
+    if not denom_synonyms:
+        denom_synonyms = [x[f"label_{lang}"] for x in denom_list]
+    return [" ".join(x) for x in product(num_synonyms, ["per"], denom_synonyms)]
+
+
 def get_canonical_ucum_code(num_list: List[dict], denom_list: List[dict]) -> str:
     return_lst = []
     for n in num_list:
@@ -372,7 +373,7 @@ def get_definition_parts(
     unit_exponents: dict,
     lang: str = "en",
 ) -> Optional[List[str]]:
-    """"""
+    """Get a definition for this part of the parsed term."""
     return_lst = []
     for u in units_list:
         unit_details = umuc_si.get(u["unit"])
@@ -404,7 +405,7 @@ def get_definition_parts(
 
 
 def get_exponent(result: dict, unit_exponents: dict, lang: str = "en") -> Optional[str]:
-    """"""
+    """Get an exponent label based on the parsed result."""
     power = str(result["exponent"]).replace("-", "")
     power_details = unit_exponents.get(power)
     if not power_details:
@@ -415,6 +416,7 @@ def get_exponent(result: dict, unit_exponents: dict, lang: str = "en") -> Option
 def get_label_part(
     result: dict, ucum_si: dict, unit_prefixes: dict, unit_exponents: dict, lang: str = "en"
 ) -> Optional[str]:
+    """Get the label for this part of the parsed term."""
     # Get prefix
     prefix_details = unit_prefixes.get(result["prefix"])
     if prefix_details:
@@ -506,6 +508,7 @@ def get_symbol_code(result: dict, ucum_si: dict) -> Optional[str]:
 def get_synonyms_part(
     result: dict, ucum_si: dict, unit_prefixes: dict, unit_exponents: dict, lang: str = "en"
 ) -> Optional[List[str]]:
+    """Get a list of synonyms for this part of the parsed term."""
     # Get prefix
     prefix_details = unit_prefixes.get(result["prefix"])
     if prefix_details:
