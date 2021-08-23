@@ -14,7 +14,10 @@ def main():
     parser.add_argument("-e", "--exponents", help="Exponent labels")
     parser.add_argument("-m", "--mappings", help="External ontology term to UCUM code mappings")
     parser.add_argument(
-        "-f", "--format", help="Output format: ttl, json-ld, or html (default: ttl)", default="ttl"
+        "-f",
+        "--format",
+        help="Output format: ttl, json-ld, html, xml (default: ttl)",
+        default="ttl",
     )
     parser.add_argument("-l", "--lang", help="Language for annotations (default: en)", default="en")
     parser.add_argument(
@@ -23,7 +26,7 @@ def main():
     args = parser.parse_args()
 
     outfmt = args.format
-    if outfmt not in ["html", "json-ld", "ttl"]:
+    if outfmt not in ["html", "json-ld", "ttl", "xml"]:
         raise Exception("Unknown output format: " + outfmt)
 
     # Read in provided files
