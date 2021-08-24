@@ -341,9 +341,11 @@ def get_canonical_synonyms(
     if not num_synonyms and not denom_synonyms:
         return []
     if not num_synonyms:
-        num_synonyms = [x[f"label_{lang}"] for x in num_list]
+        # Synonyms exist for denominator, use label in place of numerator(s)
+        num_synonyms = [" ".join([x[f"label_{lang}"] for x in num_list])]
     if not denom_synonyms:
-        denom_synonyms = [x[f"label_{lang}"] for x in denom_list]
+        # Synonyms exist for numerator, use label in place of denominator(s)
+        denom_synonyms = [" ".join([x[f"label_{lang}"] for x in denom_list])]
     return [" ".join(x) for x in product(num_synonyms, ["per"], denom_synonyms)]
 
 

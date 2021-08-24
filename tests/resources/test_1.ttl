@@ -30,8 +30,7 @@ unit:A.s a owl:NamedIndividual ;
 
 unit:A2.s4.kg-1.m-2 a owl:NamedIndividual ;
     rdfs:label "square ampere quartic second per kilogram square metre"@en ;
-    skos:altLabel "quartic second per kilogram square meter"@en,
-        "square ampere per kilogram square meter"@en ;
+    skos:altLabel "square ampere quartic second per kilogram square meter"@en ;
     skos:definition "A unit which is equal to 1 square ampere by 1 quartic second per 10³ gram by 1 square metre."@en ;
     unit:SI_code "A2 s4 kg-1 m-2" ;
     unit:ucum_code "A2.s4.kg-1.m-2",
