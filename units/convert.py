@@ -44,6 +44,15 @@ QUDT = Namespace(ONTOLOGY_PREFIXES["QUDT"])
 UO = Namespace(ONTOLOGY_PREFIXES["UO"])
 
 
+def get_equivalent_units(ucum_si, unit):
+    unit_details = ucum_si.get(unit["unit"])
+    if unit_details:
+        eq_code = unit_details["equivalent_code"]
+        if eq_code:
+            return eq_code.split("|")
+    return []
+
+
 def convert(
     inputs: list,
     ucum_si: dict,
@@ -116,6 +125,7 @@ def convert(
 
             # Create the UCUM codes from prefix & unit
             u["ucum_code"] = u["prefix"] + u["unit"]
+            u["equivalent_codes"] = [u["prefix"] + x for x in get_equivalent_units(ucum_si, u)]
 
             # Create label from units & prefixes
             label = get_label_part(u, ucum_si, unit_prefixes, unit_exponents, lang=lang)
@@ -166,6 +176,9 @@ def convert(
         if alt_code != ucum_codes[0]:
             ucum_codes.append(alt_code)
 
+        # Generate equivalent UCUM codes
+        equivalent_codes = get_equivalent_ucum_codes(num_list, denom_list)
+
         # Generate list of UCUM codes from results
         ucum_si_list = get_si_ucum_list(processed_units)
 
@@ -179,7 +192,14 @@ def convert(
 
         # Format TTL from parser results
         triples = get_triples(
-            ucum_codes, label, synonyms, si_code, definition, mappings_complete, lang=lang
+            ucum_codes,
+            equivalent_codes,
+            label,
+            synonyms,
+            si_code,
+            definition,
+            mappings_complete,
+            lang=lang,
         )
         for t in triples:
             gout.add(t)
@@ -359,6 +379,31 @@ def get_canonical_ucum_code(num_list: List[dict], denom_list: List[dict]) -> str
     for n in denom_list:
         return_lst.append(n["ucum_code"] + str(n["exponent"]))
     return ".".join(return_lst)
+
+
+def get_equivalent_ucum_codes(num_list: List[dict], denom_list: List[dict]) -> List[str]:
+    possible_codes = []
+    has_eq_code = False
+    for n in num_list:
+        eq_codes = n["equivalent_codes"]
+        if eq_codes:
+            has_eq_code = True
+        else:
+            eq_codes = [n["ucum_code"]]
+        if str(n["exponent"]) == "1":
+            possible_codes.append(eq_codes)
+        else:
+            possible_codes.append([x + str(n["exponent"]) for x in eq_codes])
+    for n in denom_list:
+        eq_codes = n["equivalent_codes"]
+        if eq_codes:
+            has_eq_code = True
+        else:
+            eq_codes = [n["ucum_code"]]
+        possible_codes.append([x + str(n["exponent"]) for x in eq_codes])
+    if not has_eq_code:
+        return []
+    return [".".join(x) for x in product(*possible_codes)]
 
 
 def get_curie(iri):
@@ -542,6 +587,7 @@ def get_synonyms_part(
 
 def get_triples(
     ucum_codes: List[str],
+    equivalent_codes: List[str],
     label: str,
     synonyms: List[str],
     si_code: str,
@@ -568,6 +614,8 @@ def get_triples(
         triples.append((term, unit_ns.SI_code, Literal(si_code)))
     for uc in ucum_codes:
         triples.append((term, unit_ns.ucum_code, Literal(uc)))
+    for ec in equivalent_codes:
+        triples.append((term, SKOS.exactMatch, unit_ns[url_quote(ec)]))
 
     # Add mappings (if present)
     for m in mappings:

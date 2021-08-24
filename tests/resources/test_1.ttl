@@ -39,7 +39,8 @@ unit:A2.s4.kg-1.m-2 a owl:NamedIndividual ;
 unit:Mkat a owl:NamedIndividual ;
     rdfs:label "megakatal"@en ;
     skos:definition "A unit which is equal to 10⁶ katal."@en ;
-    skos:exactMatch OM:megakatal ;
+    skos:exactMatch OM:megakatal,
+        unit:Mmol.s-1 ;
     unit:SI_code "Mkat" ;
     unit:ucum_code "Mkat" .
 
