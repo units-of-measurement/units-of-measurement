@@ -1,4 +1,3 @@
-@prefix IAO: <http://purl.obolibrary.org/obo/IAO_> .
 @prefix NERC_P06: <http://vocab.nerc.ac.uk/collection/P06/current/> .
 @prefix OBOE: <http://ecoinformatics.org/oboe/oboe.1.2/oboe-standards.owl#> .
 @prefix OM: <http://www.ontology-of-units-of-measure.org/resource/om-2/> .
@@ -9,12 +8,10 @@
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 @prefix unit: <https://w3id.org/units/> .
 
-IAO:0000115 a owl:AnnotationProperty ;
-    rdfs:label "definition" .
-
 <https://w3id.org/units/%27> a owl:NamedIndividual ;
     rdfs:label "plane angle minute"@en ;
-    IAO:0000115 "A unit which 1) is a unit of plane and phase angle, 2) is a non-SI but is accepted accepted for use with the SI Units and 2) is equal to π/ 10800 radian."@en ;
+    skos:altLabel "arc minute"@en ;
+    skos:definition "A unit which 1) is a unit of plane and phase angle, 2) is a non-SI but is accepted accepted for use with the SI Units and 2) is equal to π/ 10800 radian."@en ;
     skos:exactMatch QUDT:ARCMIN,
         QUDT:MIN_Angle,
         NERC_P06:UAMN,
@@ -24,7 +21,8 @@ IAO:0000115 a owl:AnnotationProperty ;
 
 <https://w3id.org/units/%27%27> a owl:NamedIndividual ;
     rdfs:label "plane angle second"@en ;
-    IAO:0000115 "A unit which 1) is a unit of plane and phase angle, 2) is a non-SI but is accepted accepted for use with the SI Units and 2) is equal to π/ 648000 radian."@en ;
+    skos:altLabel "arc second"@en ;
+    skos:definition "A unit which 1) is a unit of plane and phase angle, 2) is a non-SI but is accepted accepted for use with the SI Units and 2) is equal to π/ 648000 radian."@en ;
     skos:exactMatch QUDT:ARCSEC,
         OM:second-Angle ;
     unit:SI_code "′′" ;
@@ -32,7 +30,7 @@ IAO:0000115 a owl:AnnotationProperty ;
 
 unit:Cel a owl:NamedIndividual ;
     rdfs:label "degree Celsius"@en ;
-    IAO:0000115 "A special named SI unit which 1) is a unit of temperature and 2) is equal to a one kelvin."@en ;
+    skos:definition "A special named SI unit which 1) is a unit of temperature and 2) is equal to a one kelvin."@en ;
     skos:exactMatch OBOE:Celsius,
         UO:0000027,
         QUDT:DEG_C,
@@ -43,7 +41,7 @@ unit:Cel a owl:NamedIndividual ;
 
 unit:L a owl:NamedIndividual ;
     rdfs:label "litre"@en ;
-    IAO:0000115 "A unit which 1) is a unit of volume, 2) is a non-SI but is accepted accepted for use with the SI Units and 2) is equal to 10⁻³ cubic metre."@en ;
+    skos:definition "A unit which 1) is a unit of volume, 2) is a non-SI but is accepted accepted for use with the SI Units and 2) is equal to 10⁻³ cubic metre."@en ;
     skos:exactMatch OBOE:Liter,
         UO:0000099,
         QUDT:L,
@@ -54,7 +52,7 @@ unit:L a owl:NamedIndividual ;
 
 unit:Ohm a owl:NamedIndividual ;
     rdfs:label "ohm"@en ;
-    IAO:0000115 "A special named SI unit which 1) is a unit of electric resistance and 2) is equal to a kilogram square metre per square ampere cubic second."@en ;
+    skos:definition "A special named SI unit which 1) is a unit of electric resistance and 2) is equal to a kilogram square metre per square ampere cubic second."@en ;
     skos:exactMatch QUDT:OHM,
         NERC_P06:UOHM,
         OM:ohm ;
@@ -63,7 +61,7 @@ unit:Ohm a owl:NamedIndividual ;
 
 unit:ar a owl:NamedIndividual ;
     rdfs:label "are"@en ;
-    IAO:0000115 "A unit which 1) is a unit of area, 2) is a non-SI but is accepted accepted for use with the SI Units and 2) is equal to 10⁴ square metre."@en ;
+    skos:definition "A unit which 1) is a unit of area, 2) is a non-SI but is accepted accepted for use with the SI Units and 2) is equal to 10⁴ square metre."@en ;
     skos:exactMatch OBOE:Are,
         QUDT:ARE,
         OM:are ;
@@ -72,7 +70,7 @@ unit:ar a owl:NamedIndividual ;
 
 unit:deg a owl:NamedIndividual ;
     rdfs:label "plane angle degree"@en ;
-    IAO:0000115 "A unit which 1) is a unit of plane and phase angle, 2) is a non-SI but is accepted accepted for use with the SI Units and 2) is equal to π/180 radian."@en ;
+    skos:definition "A unit which 1) is a unit of plane and phase angle, 2) is a non-SI but is accepted accepted for use with the SI Units and 2) is equal to π/180 radian."@en ;
     skos:exactMatch OBOE:Degree,
         UO:0000185,
         QUDT:DEG,
@@ -83,7 +81,7 @@ unit:deg a owl:NamedIndividual ;
 
 unit:har a owl:NamedIndividual ;
     rdfs:label "hectare"@en ;
-    IAO:0000115 "A unit which is equal to 10² are."@en ;
+    skos:definition "A unit which is equal to 10² are."@en ;
     skos:exactMatch OBOE:Hectare,
         UO:0010010,
         QUDT:HA,
@@ -94,7 +92,8 @@ unit:har a owl:NamedIndividual ;
 
 <https://w3id.org/units/m%27%27> a owl:NamedIndividual ;
     rdfs:label "milliplane angle second"@en ;
-    IAO:0000115 "A unit which is equal to 10⁻³ plane angle second."@en ;
+    skos:altLabel "milliarc second"@en ;
+    skos:definition "A unit which is equal to 10⁻³ plane angle second."@en ;
     skos:exactMatch OM:millisecond-Angle ;
     unit:SI_code "m′′" ;
     unit:ucum_code "m''" .

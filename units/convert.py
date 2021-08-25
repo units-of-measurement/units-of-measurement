@@ -3,11 +3,10 @@ import logging
 import re
 
 from collections import defaultdict, Iterable
-from itertools import permutations
-from typing import List, Optional
-
+from itertools import permutations, product
 from lark.exceptions import LarkError
 from rdflib import Graph, Literal, Namespace, OWL, RDF, RDFS, SKOS
+from typing import List, Optional
 from urllib.parse import quote as url_quote
 from .grammar import si_grammar, UnitsTransformer
 
@@ -119,11 +118,16 @@ def convert(
             u["ucum_code"] = u["prefix"] + u["unit"]
 
             # Create label from units & prefixes
-            label = get_label_parts(u, ucum_si, unit_prefixes, unit_exponents)
+            label = get_label_part(u, ucum_si, unit_prefixes, unit_exponents, lang=lang)
             if label:
                 u[f"label_{lang}"] = label
             else:
                 raise ValueError(f"Could not create a label for '{inpt}'")
+
+            # Create synonyms from units & prefixes (empty list if there are none)
+            u[f"exact_synonym_{lang}"] = get_synonyms_part(
+                u, ucum_si, unit_prefixes, unit_exponents, lang=lang
+            )
 
             # Split numerator and denominator into two lists
             if str(u["exponent"])[0] == "-":
@@ -143,6 +147,9 @@ def convert(
 
         # Generate canonical term label
         label = get_canonical_label(num_list, denom_list, lang=lang)
+
+        # Generate canonical synonyms
+        synonyms = get_canonical_synonyms(num_list, denom_list, lang=lang)
 
         # Generate canonical English definition
         definition = get_canonical_definition(
@@ -171,7 +178,9 @@ def convert(
         ]
 
         # Format TTL from parser results
-        triples = get_triples(ucum_codes, label, si_code, definition, mappings_complete, lang=lang)
+        triples = get_triples(
+            ucum_codes, label, synonyms, si_code, definition, mappings_complete, lang=lang
+        )
         for t in triples:
             gout.add(t)
     return gout
@@ -315,6 +324,31 @@ def get_canonical_si_code(num_list: List[dict], denom_list: List[dict]) -> Optio
     return " ".join(return_lst)
 
 
+def get_canonical_synonyms(
+    num_list: List[dict], denom_list: List[dict], lang: str = "en"
+) -> List[str]:
+    """Use the processed numerators and denominators from a unit input to create a list of all
+    possible synonyms."""
+    if not denom_list:
+        # No denominators
+        return get_possible_synonyms(num_list, lang=lang)
+    elif not num_list:
+        # No numerators
+        return get_possible_synonyms(denom_list, lang=lang, reciprocal=True)
+    # Mix of numerators and denominators
+    num_synonyms = get_possible_synonyms(num_list, lang=lang)
+    denom_synonyms = get_possible_synonyms(denom_list, lang=lang)
+    if not num_synonyms and not denom_synonyms:
+        return []
+    if not num_synonyms:
+        # Synonyms exist for denominator, use label in place of numerator(s)
+        num_synonyms = [" ".join([x[f"label_{lang}"] for x in num_list])]
+    if not denom_synonyms:
+        # Synonyms exist for numerator, use label in place of denominator(s)
+        denom_synonyms = [" ".join([x[f"label_{lang}"] for x in denom_list])]
+    return [" ".join(x) for x in product(num_synonyms, ["per"], denom_synonyms)]
+
+
 def get_canonical_ucum_code(num_list: List[dict], denom_list: List[dict]) -> str:
     return_lst = []
     for n in num_list:
@@ -341,7 +375,7 @@ def get_definition_parts(
     unit_exponents: dict,
     lang: str = "en",
 ) -> Optional[List[str]]:
-    """"""
+    """Get a definition for this part of the parsed term."""
     return_lst = []
     for u in units_list:
         unit_details = umuc_si.get(u["unit"])
@@ -373,7 +407,7 @@ def get_definition_parts(
 
 
 def get_exponent(result: dict, unit_exponents: dict, lang: str = "en") -> Optional[str]:
-    """"""
+    """Get an exponent label based on the parsed result."""
     power = str(result["exponent"]).replace("-", "")
     power_details = unit_exponents.get(power)
     if not power_details:
@@ -381,9 +415,10 @@ def get_exponent(result: dict, unit_exponents: dict, lang: str = "en") -> Option
     return power_details.get(f"label_{lang}")
 
 
-def get_label_parts(
+def get_label_part(
     result: dict, ucum_si: dict, unit_prefixes: dict, unit_exponents: dict, lang: str = "en"
 ) -> Optional[str]:
+    """Get the label for this part of the parsed term."""
     # Get prefix
     prefix_details = unit_prefixes.get(result["prefix"])
     if prefix_details:
@@ -408,6 +443,28 @@ def get_label_parts(
     elif power is None:
         return prefix + unit
     return power + " " + prefix + unit
+
+
+def get_possible_synonyms(lst, lang: str = "en", reciprocal: bool = False):
+    """Return a list of synonyms that contains all possible in-order permutations of the
+    synonym parts."""
+    synonym_order = []
+    has_synonym = False
+    for n in lst:
+        synonyms = n[f"exact_synonym_{lang}"]
+        if not synonyms:
+            # Use the label for this part in place of synonym
+            synonym_order.append([n[f"label_{lang}"]])
+            continue
+        has_synonym = True
+        synonym_order.append(synonyms)
+    if not has_synonym:
+        return []
+    combinations = product(*synonym_order)
+    if reciprocal:
+        return ["reciprocal " + " ".join(x) for x in combinations]
+    else:
+        return [" ".join(x) for x in combinations]
 
 
 def get_si_ucum_list(dict_list: List[dict]) -> List[str]:
@@ -450,9 +507,43 @@ def get_symbol_code(result: dict, ucum_si: dict) -> Optional[str]:
     return pref + unit
 
 
+def get_synonyms_part(
+    result: dict, ucum_si: dict, unit_prefixes: dict, unit_exponents: dict, lang: str = "en"
+) -> Optional[List[str]]:
+    """Get a list of synonyms for this part of the parsed term."""
+    # Get prefix
+    prefix_details = unit_prefixes.get(result["prefix"])
+    if prefix_details:
+        prefix = prefix_details[f"label_{lang}"]
+    else:
+        prefix = ""
+
+    # Maybe get unit
+    unit_details = ucum_si.get(result["unit"])
+    if not unit_details:
+        logging.warning("No 'unit' entry in results:\n" + json.dumps(result, indent=4))
+        return []
+    synonyms = unit_details.get(f"exact_synonym_{lang}")
+    if not synonyms:
+        return []
+
+    # Check for an exponent & add formatted string
+    unit_synonyms = []
+    power = get_exponent(result, unit_exponents, lang=lang)
+    for unit in synonyms.split("|"):
+        if unit == "are" and prefix in ["hecto", "deca"]:
+            prefix = prefix[:-1]
+        if power is None:
+            unit_synonyms.append(prefix + unit)
+            continue
+        unit_synonyms.append(power + " " + prefix + unit)
+    return unit_synonyms
+
+
 def get_triples(
     ucum_codes: List[str],
     label: str,
+    synonyms: List[str],
     si_code: str,
     definition: str,
     mappings: List[str],
@@ -468,6 +559,9 @@ def get_triples(
     # Add annotations
     if label:
         triples.append((term, RDFS.label, Literal(label, lang=lang)))
+    if synonyms:
+        for syn in synonyms:
+            triples.append((term, SKOS.altLabel, Literal(syn, lang=lang)))
     if definition:
         triples.append((term, SKOS.definition, Literal(definition, lang=lang)))
     if si_code:

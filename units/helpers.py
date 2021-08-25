@@ -10,6 +10,7 @@ ENCODING = "utf-8-sig"
 def get_si_mappings(filepath: str = None, lang: str = "en") -> Dict[str, dict]:
     label_key = f"label_{lang}"
     def_key = f"definition_{lang}"
+    syn_key = f"exact_synonym_{lang}"
     ucum_si = {}
     si_file = filepath or os.path.join(os.path.dirname(__file__), "resources/si_input.csv")
     sep = "\t"
@@ -22,6 +23,7 @@ def get_si_mappings(filepath: str = None, lang: str = "en") -> Dict[str, dict]:
                 "symbol": row["SI_symbol"],
                 label_key: row[label_key],
                 def_key: row[def_key],
+                syn_key: row[syn_key],
             }
     return ucum_si
 

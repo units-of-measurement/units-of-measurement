@@ -47,14 +47,15 @@ This table maps standard SI symbols to UCUM symbols. This file requires the foll
 * `UCUM_symbol`
 * `SI_symbol`
 * `label_en`: The label in English (you can replace 'en' with another lang tag if you're using a different language as specified in the command line, e.g., `label_fr`)
+* `exact_synonym_en`: An optional field for exact English synonyms; mutliple synonyms should be pipe-separated (same as above, e.g., `exact_synonym_fr`)
 * `definition_en`: The definition in English (same as above, e.g., `definition_fr`)
 
 For example (with truncated defintion):
 
-| UCUM_symbol | SI_symbol | label_en       | definition_en              |
-| ----------- | --------- | -------------- | -------------------------- |
-| Cel         | °C        | degree Celsius | A special named SI unit... |
-| Ohm         | Ω         | ohm            | A special named SI unit... |
+| UCUM_symbol | SI_symbol | label_en       | exact_synonym_en |definition_en               |
+| ----------- | --------- | -------------- | ---------------- |--------------------------- |
+| Cel         | °C        | degree Celsius |                  | A special named SI unit... |
+| m           | m         | metre          | meter            | An SI base unit which...   |
 
 #### Prefixes Table
 
