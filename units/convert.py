@@ -408,12 +408,6 @@ def get_canonical_synonyms(
     return [" ".join(x) for x in product(num_synonyms, ["per"], denom_synonyms)]
 
 
-def get_ucum_code_part(part, numerator: bool = False):
-    if numerator and str(part["exponent"]) == "1":
-        return part["ucum_code"]
-    return part["ucum_code"] + str(part["exponent"])
-
-
 def get_canonical_ucum_code(num_list: List[dict], denom_list: List[dict]) -> str:
     return_lst = []
     for n in num_list:
@@ -688,6 +682,14 @@ def get_triples(
             continue
         triples.append((term, SKOS.exactMatch, mapped_term))
     return triples
+
+
+def get_ucum_code_part(part, numerator: bool = False):
+    """Use the parsed part to create the UCUM code.
+    If the part is a numerator, only include exponent if exponent != 1."""
+    if numerator and str(part["exponent"]) == "1":
+        return part["ucum_code"]
+    return part["ucum_code"] + str(part["exponent"])
 
 
 def graph_to_html(gout: Graph) -> str:
