@@ -17,7 +17,7 @@
         NERC_P06:UAMN,
         OM:minute-Angle ;
     unit:SI_code "′" ;
-    unit:ucum_code "'" .
+    unit:UCUM_code "'" .
 
 <https://w3id.org/units/%27%27> a owl:NamedIndividual ;
     rdfs:label "plane angle second"@en ;
@@ -26,7 +26,7 @@
     skos:exactMatch QUDT:ARCSEC,
         OM:second-Angle ;
     unit:SI_code "′′" ;
-    unit:ucum_code "''" .
+    unit:UCUM_code "''" .
 
 unit:Cel a owl:NamedIndividual ;
     rdfs:label "degree Celsius"@en ;
@@ -37,7 +37,7 @@ unit:Cel a owl:NamedIndividual ;
         NERC_P06:UPAA,
         OM:degreeCelsius ;
     unit:SI_code "°C" ;
-    unit:ucum_code "Cel" .
+    unit:UCUM_code "Cel" .
 
 unit:L a owl:NamedIndividual ;
     rdfs:label "litre"@en ;
@@ -48,7 +48,7 @@ unit:L a owl:NamedIndividual ;
         NERC_P06:ULIT,
         OM:litre ;
     unit:SI_code "L" ;
-    unit:ucum_code "L" .
+    unit:UCUM_code "L" .
 
 unit:Ohm a owl:NamedIndividual ;
     rdfs:label "ohm"@en ;
@@ -57,7 +57,13 @@ unit:Ohm a owl:NamedIndividual ;
         NERC_P06:UOHM,
         OM:ohm ;
     unit:SI_code "Ω" ;
-    unit:ucum_code "Ohm" .
+    unit:UCUM_code "Ohm" .
+
+unit:SI_code a owl:AnnotationProperty ;
+    rdfs:label "SI code" .
+
+unit:UCUM_code a owl:AnnotationProperty ;
+    rdfs:label "UCUM code" .
 
 unit:ar a owl:NamedIndividual ;
     rdfs:label "are"@en ;
@@ -66,7 +72,7 @@ unit:ar a owl:NamedIndividual ;
         QUDT:ARE,
         OM:are ;
     unit:SI_code "a" ;
-    unit:ucum_code "ar" .
+    unit:UCUM_code "ar" .
 
 unit:deg a owl:NamedIndividual ;
     rdfs:label "plane angle degree"@en ;
@@ -77,7 +83,7 @@ unit:deg a owl:NamedIndividual ;
         NERC_P06:UAAA,
         OM:degree ;
     unit:SI_code "°" ;
-    unit:ucum_code "deg" .
+    unit:UCUM_code "deg" .
 
 unit:har a owl:NamedIndividual ;
     rdfs:label "hectare"@en ;
@@ -88,7 +94,7 @@ unit:har a owl:NamedIndividual ;
         NERC_P06:HCTR,
         OM:hectare ;
     unit:SI_code "ha" ;
-    unit:ucum_code "har" .
+    unit:UCUM_code "har" .
 
 <https://w3id.org/units/m%27%27> a owl:NamedIndividual ;
     rdfs:label "milliplane angle second"@en ;
@@ -96,5 +102,5 @@ unit:har a owl:NamedIndividual ;
     skos:definition "A unit which is equal to 10⁻³ plane angle second."@en ;
     skos:exactMatch OM:millisecond-Angle ;
     unit:SI_code "m′′" ;
-    unit:ucum_code "m''" .
+    unit:UCUM_code "m''" .
 
