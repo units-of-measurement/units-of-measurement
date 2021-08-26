@@ -23,6 +23,9 @@ def main():
     parser.add_argument(
         "-x", "--exclude-mappings", action="store_true", help="Exclude ontology mappings"
     )
+    parser.add_argument(
+        "-b", "--base-iri", default="https://w3id.org/units/", help="Base IRI for units"
+    )
     args = parser.parse_args()
 
     outfmt = args.format
@@ -51,7 +54,15 @@ def main():
     if not args.exclude_mappings:
         mappings = get_mappings(args.mappings)
 
-    gout = convert(inputs, ucum_si, unit_prefixes, unit_exponents, mappings, lang=args.lang)
+    gout = convert(
+        inputs,
+        ucum_si,
+        unit_prefixes,
+        unit_exponents,
+        mappings,
+        lang=args.lang,
+        base_iri=args.base_iri,
+    )
     if outfmt == "html":
         outstr = graph_to_html(gout)
     elif outfmt == "json-ld":
