@@ -554,11 +554,13 @@ def get_triples(
     # The canonical UCUM code is the first entry in the list
     term = unit_ns[url_quote(ucum_codes[0])]
     # Assert that this is an owl instance & add unit annotation properties
-    triples = [(term, RDF.type, OWL.NamedIndividual),
-               (unit_ns.SI_code, RDF.type, OWL.AnnotationProperty),
-               (unit_ns.SI_code, RDFS.label, Literal("SI code")),
-               (unit_ns.UCUM_code, RDF.type, OWL.AnnotationProperty),
-               (unit_ns.UCUM_code, RDFS.label, Literal("UCUM code"))]
+    triples = [
+        (term, RDF.type, OWL.NamedIndividual),
+        (unit_ns.SI_code, RDF.type, OWL.AnnotationProperty),
+        (unit_ns.SI_code, RDFS.label, Literal("SI code")),
+        (unit_ns.UCUM_code, RDF.type, OWL.AnnotationProperty),
+        (unit_ns.UCUM_code, RDFS.label, Literal("UCUM code")),
+    ]
 
     # Add unit annotation properties
 
