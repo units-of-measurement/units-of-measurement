@@ -2,13 +2,14 @@ import csv
 import sys
 
 from argparse import ArgumentParser
+from io import TextIOWrapper
 from .convert import convert, graph_to_html
 from .helpers import ENCODING, get_exponents, get_mappings, get_prefixes, get_si_mappings
 
 
 def main():
     parser = ArgumentParser()
-    parser.add_argument("input", help="Input list of UCUM codes")
+    parser.add_argument("input", nargs="?", default=sys.stdin, help="Input list of UCUM codes")
     parser.add_argument("-s", "--si", help="SI unit labels and codes")
     parser.add_argument("-p", "--prefixes", help="SI prefix labels and codes")
     parser.add_argument("-e", "--exponents", help="Exponent labels")
@@ -34,11 +35,14 @@ def main():
 
     # Read in provided files
     sep = "\t"
-    if args.input.endswith(".csv"):
-        sep = ","
-    with open(args.input, "r", encoding=ENCODING) as f:
-        reader = csv.reader(f, delimiter=sep)
-        inputs = [x[0] for x in reader]
+    if isinstance(args.input, TextIOWrapper):
+        inputs = [x.strip() for x in args.input.readlines()]
+    else:
+        if args.input.endswith(".csv"):
+            sep = ","
+        with open(args.input, "r", encoding=ENCODING) as f:
+            reader = csv.reader(f, delimiter=sep)
+            inputs = [x[0].strip() for x in reader]
 
     # Get the SI->UCUM mappings
     ucum_si = get_si_mappings(args.si, args.lang)

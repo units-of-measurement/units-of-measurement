@@ -25,7 +25,14 @@ units -h
 units INPUT > OUTPUT
 ```
 
-... where the `INPUT` is the path to a file containing a list of UCUM codes to convert to linked data.
+... where the `INPUT` is the path to a file containing a list of UCUM codes to convert to linked data. This file should have one UCUM code per line.
+
+You can also pipe input in with one code per new line. If you only include one code, it does not need to be surrounded by double quotes.
+
+```
+units <<< "mol.s-1
+           L2" > OUTPUT
+```
 
 Optional arguments:
 * `-s`/`--si`: see [SI Mapping Table](#si-mapping-table). If not included, the default is [this file](https://github.com/ontodev/units/tree/main/units/resources/si_input.csv).
