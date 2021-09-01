@@ -700,7 +700,7 @@ def get_ucum_code_part(part, numerator: bool = False):
     return part["ucum_code"] + str(part["exponent"])
 
 
-def graph_to_html(gout: Graph) -> str:
+def graph_to_html(gout: Graph, rdf_type=OWL.NamedIndividual) -> str:
     """Convert an rdflib Graph containing UCUM triples to HTML+RDFa."""
     # Create the RDFa prefix string
     prefixes = []
@@ -719,7 +719,7 @@ def graph_to_html(gout: Graph) -> str:
 
     # Get the attributes of all individuals (the UCUM codes)
     node_attributes = []
-    for node in gout.subjects(RDF.type, OWL.NamedIndividual):
+    for node in gout.subjects(RDF.type, rdf_type):
         iri = str(node)
         predicate_values = defaultdict(set)
         predicate_objects = defaultdict(set)
