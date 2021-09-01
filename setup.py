@@ -8,7 +8,7 @@ with open(here + "/README.md", "r") as fh:
 
 install_requires = ["lark-parser", "rdflib"]
 
-test_requires = []
+test_requires = ["pytest"]
 
 setup(
     name="ontodev-units",

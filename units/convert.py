@@ -9,6 +9,7 @@ from rdflib import Graph, Literal, Namespace, OWL, RDF, RDFS, SKOS
 from typing import List, Optional
 from urllib.parse import quote as url_quote
 from .grammar import si_grammar, UnitsTransformer
+from .helpers import get_exponents, get_mappings, get_prefixes, get_si_mappings
 
 KG_DEFINITION_EN = (
     "An SI base unit which 1) is the SI unit of mass and 2) is defined by taking "
@@ -46,13 +47,14 @@ UO = Namespace(ONTOLOGY_PREFIXES["UO"])
 
 def convert(
     inputs: list,
-    ucum_si: dict,
-    unit_prefixes: dict,
-    unit_exponents: dict,
-    mappings: dict,
-    base_iri="https://w3id.org/units/",
-    lang="en",
-    fail_on_err=False,
+    ucum_si: dict = None,
+    unit_prefixes: dict = None,
+    unit_exponents: dict = None,
+    mappings: dict = None,
+    base_iri: str = "https://w3id.org/units/",
+    lang: str = "en",
+    fail_on_err: bool = False,
+    use_default_mappings: bool = True
 ) -> Graph:
     """
 
@@ -66,6 +68,7 @@ def convert(
     :param base_iri:
     :param lang: language for annotations (default: en)
     :param fail_on_err:
+    :param use_default_mappings:
     :return: rdflib graph object
     """
     # Update prefixes with provided base IRI
@@ -74,6 +77,20 @@ def convert(
     # Add ontology prefixes
     for ns, base in ONTOLOGY_PREFIXES.items():
         gout.bind(ns, base)
+
+    # Get the default input files if they were not provided
+    if not ucum_si:
+        ucum_si = get_si_mappings(lang=lang)
+    if not unit_prefixes:
+        unit_prefixes = get_prefixes(lang=lang)
+    if not unit_exponents:
+        unit_exponents = get_exponents(lang=lang)
+    if not mappings and use_default_mappings:
+        # Mappings will not be included if use_default_mappings is false
+        mappings = get_mappings()
+    elif use_default_mappings:
+        # Add default mappings to user-provided mappings
+        mappings.update(get_mappings())
 
     # Create two-wap equivalent code mappings
     eq_codes = defaultdict(set)
