@@ -135,14 +135,14 @@ Note that this will regenerate all `.ttl` files in the `tests/resources/` direct
 
 ### Adding new tests
 
-To add a new test, simply create a new `test_[NUM].txt` file in that directory with a list of UCUM codes, and then use the `units` package to create a corresponding `test_[NUM].ttl` output:
+To add a new test, simply create a new `test_[NUM].txt` file in the test resources directory with a list of UCUM codes, and then use the `units` package to create a corresponding `test_[NUM].ttl` output:
 ```
 units tests/resources/test_[NUM].txt > tests/resources/test_[NUM].ttl
 ```
 
 `NUM` should be the next available integer, i.e., if `test_3` is the last test, the new test should be `test_4`.
 
-Once you've added the resources, update `tests/test_units.py` to include this. On [line 36](), increase the end of the range by one:
+Once you've added the resources, update `tests/test_units.py` to include this. On [line 36](https://github.com/ontodev/units/blob/main/tests/test_units.py#L36), increase the end of the range by one:
 ```
 def test_units():
     for n in range(1, [NEW_END]):
