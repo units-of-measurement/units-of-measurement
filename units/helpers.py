@@ -24,6 +24,7 @@ def get_si_mappings(filepath: str = None, lang: str = "en") -> Dict[str, dict]:
                 label_key: row[label_key],
                 def_key: row[def_key],
                 syn_key: row[syn_key],
+                "equivalent_code": row["equivalent_UCUM_code"],
             }
     return ucum_si
 
