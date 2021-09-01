@@ -46,7 +46,9 @@ unit:L a owl:NamedIndividual ;
         UO:0000099,
         QUDT:L,
         NERC_P06:ULIT,
-        OM:litre ;
+        OM:litre,
+        unit:dm3,
+        unit:l ;
     unit:SI_code "L" ;
     unit:ucum_code "L" .
 
