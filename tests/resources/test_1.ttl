@@ -17,7 +17,7 @@ unit:A a owl:NamedIndividual ;
         NERC_P06:AMPB,
         OM:ampere ;
     unit:SI_code "A" ;
-    unit:ucum_code "A" .
+    unit:UCUM_code "A" .
 
 unit:A.s a owl:NamedIndividual ;
     rdfs:label "ampere second"@en ;
@@ -25,7 +25,7 @@ unit:A.s a owl:NamedIndividual ;
     skos:exactMatch QUDT:A-SEC,
         OM:second-TimeAmpere ;
     unit:SI_code "A s" ;
-    unit:ucum_code "A.s",
+    unit:UCUM_code "A.s",
         "A/s" .
 
 unit:A2.s4.kg-1.m-2 a owl:NamedIndividual ;
@@ -33,7 +33,7 @@ unit:A2.s4.kg-1.m-2 a owl:NamedIndividual ;
     skos:altLabel "square ampere quartic second per kilogram square meter"@en ;
     skos:definition "A unit which is equal to 1 square ampere by 1 quartic second per 10³ gram by 1 square metre."@en ;
     unit:SI_code "A2 s4 kg-1 m-2" ;
-    unit:ucum_code "A2.s4.kg-1.m-2",
+    unit:UCUM_code "A2.s4.kg-1.m-2",
         "A2/s4/kg/m2" .
 
 unit:Mkat a owl:NamedIndividual ;
@@ -42,13 +42,19 @@ unit:Mkat a owl:NamedIndividual ;
     skos:exactMatch OM:megakatal,
         unit:Mmol.s-1 ;
     unit:SI_code "Mkat" ;
-    unit:ucum_code "Mkat" .
+    unit:UCUM_code "Mkat" .
 
 unit:N2 a owl:NamedIndividual ;
     rdfs:label "square newton"@en ;
     skos:definition "A unit which is equal to 1 square newton."@en ;
     unit:SI_code "N2" ;
-    unit:ucum_code "N2" .
+    unit:UCUM_code "N2" .
+
+unit:SI_code a owl:AnnotationProperty ;
+    rdfs:label "SI code" .
+
+unit:UCUM_code a owl:AnnotationProperty ;
+    rdfs:label "UCUM code" .
 
 unit:cd.m-2 a owl:NamedIndividual ;
     rdfs:label "candela per square metre"@en ;
@@ -58,7 +64,7 @@ unit:cd.m-2 a owl:NamedIndividual ;
         QUDT:CD-PER-M2,
         OM:candelaPerSquareMetre ;
     unit:SI_code "cd m-2" ;
-    unit:ucum_code "cd.m-2",
+    unit:UCUM_code "cd.m-2",
         "cd/m2" .
 
 unit:d-1 a owl:NamedIndividual ;
@@ -68,7 +74,7 @@ unit:d-1 a owl:NamedIndividual ;
         NERC_P06:UPDY,
         OM:reciprocalDay ;
     unit:SI_code "d-1" ;
-    unit:ucum_code "/d",
+    unit:UCUM_code "/d",
         "d-1" .
 
 unit:g.mm a owl:NamedIndividual ;
@@ -77,7 +83,7 @@ unit:g.mm a owl:NamedIndividual ;
     skos:definition "A unit which is equal to 1 gram by 10⁻³ metre."@en ;
     skos:exactMatch QUDT:GM-MilliM ;
     unit:SI_code "g mm" ;
-    unit:ucum_code "g.mm",
+    unit:UCUM_code "g.mm",
         "g/mm" .
 
 unit:kg a owl:NamedIndividual ;
@@ -89,13 +95,13 @@ unit:kg a owl:NamedIndividual ;
         NERC_P06:KGXX,
         OM:kilogram ;
     unit:SI_code "kg" ;
-    unit:ucum_code "kg" .
+    unit:UCUM_code "kg" .
 
 unit:kg-2.nSv-3 a owl:NamedIndividual ;
     rdfs:label "reciprocal square kilogram cubic nanosievert"@en ;
     skos:definition "A unit which is equal to the reciprocal of 10³ square gram by 10⁻⁹ cubic sievert."@en ;
     unit:SI_code "kg-2 nSv-3" ;
-    unit:ucum_code "/kg2/nSv3",
+    unit:UCUM_code "/kg2/nSv3",
         "kg-2.nSv-3" .
 
 unit:m a owl:NamedIndividual ;
@@ -108,20 +114,20 @@ unit:m a owl:NamedIndividual ;
         NERC_P06:ULAA,
         OM:metre ;
     unit:SI_code "m" ;
-    unit:ucum_code "m" .
+    unit:UCUM_code "m" .
 
 unit:mg-1.T-1 a owl:NamedIndividual ;
     rdfs:label "reciprocal milligram tesla"@en ;
     skos:definition "A unit which is equal to the reciprocal of 10⁻³ gram by 1 tesla."@en ;
     unit:SI_code "mg-1 T-1" ;
-    unit:ucum_code "/mg/T",
+    unit:UCUM_code "/mg/T",
         "mg-1.T-1" .
 
 unit:nSv-3 a owl:NamedIndividual ;
     rdfs:label "reciprocal cubic nanosievert"@en ;
     skos:definition "A unit which is equal to the reciprocal of 10⁻⁹ cubic sievert."@en ;
     unit:SI_code "nSv-3" ;
-    unit:ucum_code "/nSv3",
+    unit:UCUM_code "/nSv3",
         "nSv-3" .
 
 unit:ng a owl:NamedIndividual ;
@@ -133,13 +139,13 @@ unit:ng a owl:NamedIndividual ;
         NERC_P06:UNPI,
         OM:nanogram ;
     unit:SI_code "ng" ;
-    unit:ucum_code "ng" .
+    unit:UCUM_code "ng" .
 
 unit:pN2 a owl:NamedIndividual ;
     rdfs:label "square piconewton"@en ;
     skos:definition "A unit which is equal to 10⁻¹² square newton."@en ;
     unit:SI_code "pN2" ;
-    unit:ucum_code "pN2" .
+    unit:UCUM_code "pN2" .
 
 unit:s-1 a owl:NamedIndividual ;
     rdfs:label "reciprocal second"@en ;
@@ -149,7 +155,7 @@ unit:s-1 a owl:NamedIndividual ;
         NERC_P06:PRSC,
         OM:reciprocalSecond-Time ;
     unit:SI_code "s-1" ;
-    unit:ucum_code "/s",
+    unit:UCUM_code "/s",
         "s-1" .
 
 unit:um-3 a owl:NamedIndividual ;
@@ -157,6 +163,6 @@ unit:um-3 a owl:NamedIndividual ;
     skos:altLabel "reciprocal cubic micrometer"@en ;
     skos:definition "A unit which is equal to the reciprocal of 10⁻⁶ cubic metre."@en ;
     unit:SI_code "um-3" ;
-    unit:ucum_code "/um3",
+    unit:UCUM_code "/um3",
         "um-3" .
 

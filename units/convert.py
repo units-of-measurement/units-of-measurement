@@ -637,8 +637,16 @@ def get_triples(
     unit_ns = Namespace(ONTOLOGY_PREFIXES["unit"])
     # The canonical UCUM code is the first entry in the list
     term = unit_ns[url_quote(ucum_codes[0])]
-    # Assert that this is an owl instance
-    triples = [(term, RDF.type, OWL.NamedIndividual)]
+    # Assert that this is an owl instance & add unit annotation properties
+    triples = [
+        (term, RDF.type, OWL.NamedIndividual),
+        (unit_ns.SI_code, RDF.type, OWL.AnnotationProperty),
+        (unit_ns.SI_code, RDFS.label, Literal("SI code")),
+        (unit_ns.UCUM_code, RDF.type, OWL.AnnotationProperty),
+        (unit_ns.UCUM_code, RDFS.label, Literal("UCUM code")),
+    ]
+
+    # Add unit annotation properties
 
     # Add annotations
     if label:
@@ -651,7 +659,7 @@ def get_triples(
     if si_code:
         triples.append((term, unit_ns.SI_code, Literal(si_code)))
     for uc in ucum_codes:
-        triples.append((term, unit_ns.ucum_code, Literal(uc)))
+        triples.append((term, unit_ns.UCUM_code, Literal(uc)))
     for ec in equivalent_codes:
         triples.append((term, SKOS.exactMatch, unit_ns[url_quote(ec)]))
 
