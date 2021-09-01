@@ -7,3 +7,15 @@ units/resources/si_input.csv:
 refresh_sheets:
 	rm -rf $(SHEETS)
 	make $(SHEETS)
+
+TESTS = $(shell ls tests/resources/*.ttl)
+
+tests/resources/test_%.ttl: tests/resources/test_%.txt
+	units $< > $@
+
+.PHONY: clean_tests
+clean_tests:
+	rm $(TESTS)
+
+.PHONY: refresh_tests
+refresh_tests: clean_tests $(TESTS)

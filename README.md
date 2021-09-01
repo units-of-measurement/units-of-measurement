@@ -112,3 +112,41 @@ For example:
 | ---------------------------------------------------- | ---- |
 | http://vocab.nerc.ac.uk/collection/P06/current/AMPB/ | A    |
 | http://qudt.org/vocab/unit/SR                        | sr   |
+
+## Testing
+
+The `units` package uses `pytest`. To run tests:
+```
+pytest
+```
+
+Note that you should always locally re-install the package before running the tests (`python3 -m pip install .`).
+
+### Resources
+
+All test resources reside in `tests/resources/`. For each test, there is a `.txt` file containing a list of UCUM codes and a `.ttl` file containing the expected `units` output.
+
+When making major changes to the `units` package, you can refresh all tests by running:
+```
+make refresh_tests
+```
+
+Note that this will regenerate all `.ttl` files in the `tests/resources/` directory, so make sure your changes are not introducing any bugs before doing this!
+
+### Adding new tests
+
+To add a new test, simply create a new `test_[NUM].txt` file in that directory with a list of UCUM codes, and then use the `units` package to create a corresponding `test_[NUM].ttl` output:
+```
+units tests/resources/test_[NUM].txt > tests/resources/test_[NUM].ttl
+```
+
+`NUM` should be the next available integer, i.e., if `test_3` is the last test, the new test should be `test_4`.
+
+Once you've added the resources, update `tests/test_units.py` to include this. On [line 36](), increase the end of the range by one:
+```
+def test_units():
+    for n in range(1, [NEW_END]):
+        convert_test(n)
+```
+
+The `NEW_END` should be equal to `NUM + 1`, so if your new test is `test_4`, the `NEW_END` should be `5`.
