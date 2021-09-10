@@ -11,8 +11,8 @@ install_requires = ["lark-parser", "rdflib"]
 test_requires = ["pytest"]
 
 setup(
-    name="ontodev-units",
-    description="Convert UCUM to linked data",
+    name="units-of-measurement",
+    description="URLs and ID mappings for UCUM codes",
     long_description=long_description,
     long_description_content_type="text/markdown",
     version="0.0.1",
@@ -26,6 +26,6 @@ setup(
     tests_require=test_requires,
     test_suite="pytest",
     packages=find_packages(exclude="tests"),
-    entry_points={"console_scripts": ["units=units.cli:main"]},
-    package_data={"units": ["resources/*.csv"]}
+    entry_points={"console_scripts": ["uom=units_of_measurement.cli:main"]},
+    package_data={"units_of_measurement": ["resources/*.csv"]}
 )
