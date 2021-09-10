@@ -25,7 +25,7 @@ def main():
         "-x", "--exclude-mappings", action="store_true", help="Exclude ontology mappings"
     )
     parser.add_argument(
-        "-b", "--base-iri", default="https://w3id.org/units/", help="Base IRI for units"
+        "-b", "--base-iri", default="https://w3id.org/uom/", help="Base IRI for units"
     )
     args = parser.parse_args()
 

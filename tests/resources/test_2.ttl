@@ -6,9 +6,9 @@
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
-@prefix unit: <https://w3id.org/units/> .
+@prefix unit: <https://w3id.org/uom/> .
 
-<https://w3id.org/units/%27> a owl:NamedIndividual ;
+<https://w3id.org/uom/%27> a owl:NamedIndividual ;
     rdfs:label "plane angle minute"@en ;
     skos:altLabel "arc minute"@en ;
     skos:definition "A unit which 1) is a unit of plane and phase angle, 2) is a non-SI but is accepted accepted for use with the SI Units and 2) is equal to π/ 10800 radian."@en ;
@@ -19,7 +19,7 @@
     unit:SI_code "′" ;
     unit:UCUM_code "'" .
 
-<https://w3id.org/units/%27%27> a owl:NamedIndividual ;
+<https://w3id.org/uom/%27%27> a owl:NamedIndividual ;
     rdfs:label "plane angle second"@en ;
     skos:altLabel "arc second"@en ;
     skos:definition "A unit which 1) is a unit of plane and phase angle, 2) is a non-SI but is accepted accepted for use with the SI Units and 2) is equal to π/ 648000 radian."@en ;
@@ -98,7 +98,7 @@ unit:har a owl:NamedIndividual ;
     unit:SI_code "ha" ;
     unit:UCUM_code "har" .
 
-<https://w3id.org/units/m%27%27> a owl:NamedIndividual ;
+<https://w3id.org/uom/m%27%27> a owl:NamedIndividual ;
     rdfs:label "milliplane angle second"@en ;
     skos:altLabel "milliarc second"@en ;
     skos:definition "A unit which is equal to 10⁻³ plane angle second."@en ;

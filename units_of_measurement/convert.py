@@ -2,7 +2,8 @@ import json
 import logging
 import re
 
-from collections import defaultdict, Iterable
+from collections import defaultdict
+from collections.abc import Iterable
 from itertools import permutations, product
 from lark.exceptions import LarkError
 from rdflib import Graph, Literal, Namespace, OWL, RDF, RDFS, SKOS
@@ -51,7 +52,7 @@ def convert(
     unit_prefixes: dict = None,
     unit_exponents: dict = None,
     mappings: dict = None,
-    base_iri: str = "https://w3id.org/units/",
+    base_iri: str = "https://w3id.org/uom/",
     lang: str = "en",
     fail_on_err: bool = False,
     use_default_mappings: bool = True
