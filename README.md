@@ -39,7 +39,7 @@ Optional arguments:
 * `-p`/`--prefixes`: see [Prefixes Table](#prefixes-table). If not included, the default is [this file](https://github.com/ontodev/units/tree/main/units/resources/prefixes.csv).
 * `-e`/`--exponents`: see [Exponents Table](#exponents-table). If not included, the default is [this file](https://github.com/ontodev/units/tree/main/units/resources/exponents.csv).
 * `-m`/`--mappings`: see [Ontology Mapping Tables](#ontology-mapping-tables). If not included, the default is [this file](https://github.com/ontodev/units/tree/main/units/resources/mappings.csv).
-* `-b`/`--base-iri`: the base IRI for the "unit" namespace. The default is `https://w3id.org/units/`.
+* `-b`/`--base-iri`: the base IRI for the "unit" namespace. The default is `https://w3id.org/uom/`.
 * `-x`/`--exclude-mappings`: If this flag is included, exclude ontology mappings from the output
 * `-f`/`--format`: output format (`ttl`, `json-ld`, `xml`, or `html`). If not included, the default is `ttl`.
 * `-l`/`--lang`: the language used for input labels and definitions. The default is `en` and if you specify a different language, you must include your own input files (above args). Note that output definitons are currently only in English.

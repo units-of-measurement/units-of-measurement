@@ -2,7 +2,8 @@ import json
 import logging
 import re
 
-from collections import defaultdict, Iterable
+from collections import defaultdict
+from collections.abc import Iterable
 from itertools import permutations, product
 from lark.exceptions import LarkError
 from rdflib import Graph, Literal, Namespace, OWL, RDF, RDFS, SKOS

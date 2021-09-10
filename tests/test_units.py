@@ -1,12 +1,12 @@
 from rdflib import Graph
 from rdflib.compare import graph_diff, to_isomorphic
-from units.convert import convert
+from units_of_measurement.convert import convert
 
 
 def dump_ttl(g):
     for line in g.serialize(format="ttl").splitlines():
         if line:
-            print(line.decode("utf-8-sig"))
+            print(line)
 
 
 def convert_test(n):
