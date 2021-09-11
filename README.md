@@ -35,10 +35,10 @@ units <<< "mol.s-1
 ```
 
 Optional arguments:
-* `-s`/`--si`: see [SI Mapping Table](#si-mapping-table). If not included, the default is [this file](https://github.com/ontodev/units/tree/main/units/resources/si_input.csv).
-* `-p`/`--prefixes`: see [Prefixes Table](#prefixes-table). If not included, the default is [this file](https://github.com/ontodev/units/tree/main/units/resources/prefixes.csv).
-* `-e`/`--exponents`: see [Exponents Table](#exponents-table). If not included, the default is [this file](https://github.com/ontodev/units/tree/main/units/resources/exponents.csv).
-* `-m`/`--mappings`: see [Ontology Mapping Tables](#ontology-mapping-tables). If not included, the default is [this file](https://github.com/ontodev/units/tree/main/units/resources/mappings.csv).
+* `-s`/`--si`: see [SI Mapping Table](#si-mapping-table). If not included, the default is [this file](units_of_measurement/resources/si_input.csv).
+* `-p`/`--prefixes`: see [Prefixes Table](#prefixes-table). If not included, the default is [this file](units_of_measurement/resources/prefixes.csv).
+* `-e`/`--exponents`: see [Exponents Table](#exponents-table). If not included, the default is [this file](units_of_measurement/resources/exponents.csv).
+* `-m`/`--mappings`: see [Ontology Mapping Tables](#ontology-mapping-tables). If not included, the default is [this file](units_of_measurement/resources/mappings.csv).
 * `-b`/`--base-iri`: the base IRI for the "unit" namespace. The default is `https://w3id.org/uom/`.
 * `-x`/`--exclude-mappings`: If this flag is included, exclude ontology mappings from the output
 * `-f`/`--format`: output format (`ttl`, `json-ld`, `xml`, or `html`). If not included, the default is `ttl`.
@@ -49,7 +49,7 @@ Optional arguments:
 
 #### SI Mapping Table
 
-This table can be found [here](https://github.com/ontodev/units/blob/main/units/resources/si_input.csv).
+This table can be found [here](units_of_measurement/resources/si_input.csv).
 
 This table maps standard SI symbols to UCUM symbols. This file requires the following fields:
 * `UCUM_symbol`
@@ -67,7 +67,7 @@ For example (with truncated defintion):
 
 #### Prefixes Table
 
-This table can be found [here](https://github.com/ontodev/units/blob/main/units/resources/prefixes.csv).
+This table can be found [here](units_of_measurement/resources/prefixes.csv).
 
 This table contains details for scientific prefixes and their powers. The following fields are required:
 * `label_en`: The label in English (you can replace 'en' with another lang tag if you're using a different language as specified in the command line, e.g., `label_fr`)
@@ -83,7 +83,7 @@ For example:
 
 #### Exponents Table
 
-This table can be found [here](https://github.com/ontodev/units/blob/main/units/resources/exponents.csv).
+This table can be found [here](units_of_measurement/resources/exponents.csv).
 
 This table contains mappings between the exponent number and it's label. The following fields are required:
 * `power`: the exponent number
@@ -98,7 +98,7 @@ For example:
 
 #### Ontology Mapping Tables
 
-This table can be found [here](https://github.com/ontodev/units/blob/main/units/resources/mappings.csv).
+This table can be found [here](units_of_measurement/resources/mappings.csv).
 
 This table maps UCUM codes to ontology terms, with each row representing one mapping.
 
@@ -142,7 +142,7 @@ units tests/resources/test_[NUM].txt > tests/resources/test_[NUM].ttl
 
 `NUM` should be the next available integer, i.e., if `test_3` is the last test, the new test should be `test_4`.
 
-Once you've added the resources, update `tests/test_units.py` to include this. On [line 36](https://github.com/ontodev/units/blob/main/tests/test_units.py#L36), increase the end of the range by one:
+Once you've added the resources, update `tests/test_units.py` to include this. On [line 36](tests/test_units.py#L36), increase the end of the range by one:
 ```
 def test_units():
     for n in range(1, [NEW_END]):
