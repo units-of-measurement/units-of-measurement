@@ -253,22 +253,22 @@ def get_alternative_ucum_code(ucum_code):
     alt_code = []
     idx = 0
     for p in ucum_code.split("."):
-        m = re.match(r"([^-]+)-([0-9]+)", p)
-        if m:
-            unit = m.group(1)
-            power = m.group(2)
+        negative = re.match(r"([^-]+)-([0-9]+)", p)
+        if negative:
+            unit = negative.group(1)
+            power = negative.group(2)
             if int(power) > 1:
                 label_part = f"{unit}{power}"
             else:
                 label_part = unit
-            if idx == 0:
-                # If the first unit is reciprocal, make sure to include the slash
-                label_part = "/" + label_part
+            label_part = "/" + label_part
         else:
             label_part = p
+            if idx > 0:
+                label_part = "." + label_part
         alt_code.append(label_part)
         idx += 1
-    return "/".join(alt_code)
+    return "".join(alt_code)
 
 
 def get_canonical_label(num_list: List[dict], denom_list: List[dict], lang: str = "en") -> str:

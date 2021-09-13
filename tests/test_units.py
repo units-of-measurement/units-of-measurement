@@ -1,6 +1,6 @@
 from rdflib import Graph
 from rdflib.compare import graph_diff, to_isomorphic
-from units_of_measurement.convert import convert
+from units_of_measurement.convert import convert, get_alternative_ucum_code
 
 
 def dump_ttl(g):
@@ -35,3 +35,9 @@ def convert_test(n):
 def test_units():
     for n in range(1, 3):
         convert_test(n)
+
+
+def test_get_alternative_ucum_code():
+    assert "m/s" == get_alternative_ucum_code("m.s-1")
+    assert "m.s" == get_alternative_ucum_code("m.s")
+    assert "/s" == get_alternative_ucum_code("s-1")
