@@ -25,8 +25,7 @@ unit:A.s a owl:NamedIndividual ;
     skos:exactMatch QUDT:A-SEC,
         OM:second-TimeAmpere ;
     unit:SI_code "A s" ;
-    unit:UCUM_code "A.s",
-        "A/s" .
+    unit:UCUM_code "A.s" .
 
 unit:A2.s4.kg-1.m-2 a owl:NamedIndividual ;
     rdfs:label "square ampere quartic second per kilogram square metre"@en ;
@@ -34,7 +33,7 @@ unit:A2.s4.kg-1.m-2 a owl:NamedIndividual ;
     skos:definition "A unit which is equal to 1 square ampere by 1 quartic second per 10³ gram by 1 square metre."@en ;
     unit:SI_code "A2 s4 kg-1 m-2" ;
     unit:UCUM_code "A2.s4.kg-1.m-2",
-        "A2/s4/kg/m2" .
+        "A2.s4/kg/m2" .
 
 unit:Mkat a owl:NamedIndividual ;
     rdfs:label "megakatal"@en ;
@@ -83,8 +82,7 @@ unit:g.mm a owl:NamedIndividual ;
     skos:definition "A unit which is equal to 1 gram by 10⁻³ metre."@en ;
     skos:exactMatch QUDT:GM-MilliM ;
     unit:SI_code "g mm" ;
-    unit:UCUM_code "g.mm",
-        "g/mm" .
+    unit:UCUM_code "g.mm" .
 
 unit:kg a owl:NamedIndividual ;
     rdfs:label "kilogram"@en ;
