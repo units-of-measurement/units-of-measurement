@@ -16,13 +16,13 @@ python3 -m pip install .
 
 Confirm installation by running:
 ```
-units -h
+uom -h
 ```
 
 ## Usage
 
 ```
-units INPUT > OUTPUT
+uom INPUT > OUTPUT
 ```
 
 ... where the `INPUT` is the path to a file containing a list of UCUM codes to convert to linked data. This file should have one UCUM code per line.
@@ -30,7 +30,7 @@ units INPUT > OUTPUT
 You can also pipe input in with one code per new line. If you only include one code, it does not need to be surrounded by double quotes.
 
 ```
-units <<< "mol.s-1
+uom <<< "mol.s-1
            L2" > OUTPUT
 ```
 
