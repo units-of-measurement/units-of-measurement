@@ -1,6 +1,30 @@
 # units
 
-`units` converts UCUM codes to linked data. [Initial testing repository](https://github.com/kaiiam/UO_revamp), see `nc_name_script` directory.
+This repo serves two purposes:
+
+- specification for encoding UCUM units as linked data URIs
+- a reference implementation in Python
+
+## Draft Specification
+
+UCUM codes are translated into URIs using the following scheme:
+
+`https://w3id.org/uom/{encode(normalize(code))}`
+
+Here the expression is braces is evaluated using two functions:
+
+- a normalize function (see below)
+- [Percent encoding](https://en.wikipedia.org/wiki/Percent-encoding) rules
+
+For example
+
+- `[diop]` -> https://w3id.org/uom/%5Bdiop%5D
+
+Normalization: There may be multiple ways to write a unit as a UCUM code. The following normalization is first applied:
+
+1. switch / to exponents
+2. sort by exponent, from positive to negative
+3. when the exponent is the same, sort alphabetically
 
 ## Getting Started
 
