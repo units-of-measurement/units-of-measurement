@@ -18,13 +18,14 @@ Here the expression is braces is evaluated using two functions:
 
 For example
 
-- `[diop]` -> https://w3id.org/uom/%5Bdiop%5D
+- `m/s2` -> `m.s-2` -> <https://w3id.org/uom/m.s-2>
+- `[diop]` -> <https://w3id.org/uom/%5Bdiop%5D>
 
 Normalization: There may be multiple ways to write a unit as a UCUM code. The following normalization is first applied:
 
-1. switch / to exponents
-2. sort by exponent, from positive to negative
-3. when the exponent is the same, sort alphabetically
+1. convert `/` (division) to negative exponents
+2. sort parts by exponent, from positive to negative
+3. when the exponent is the same, sort parts alphabetically
 
 ## Getting Started
 
