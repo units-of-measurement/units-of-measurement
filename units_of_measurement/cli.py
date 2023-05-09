@@ -27,6 +27,12 @@ def main():
     parser.add_argument(
         "-b", "--base-iri", default="https://w3id.org/uom/", help="Base IRI for units"
     )
+    parser.add_argument(
+        "--strict", action='store_true', default=False, help="If strict then throw error on unparseable unit"
+    )
+    parser.add_argument(
+        "--no-strict", action='store_false', help="If no-strict then throw error on unparseable unit"
+    )
     args = parser.parse_args()
 
     outfmt = args.format
@@ -66,6 +72,7 @@ def main():
         mappings,
         lang=args.lang,
         base_iri=args.base_iri,
+        fail_on_err=args.strict,
     )
     if outfmt == "html":
         outstr = graph_to_html(gout)

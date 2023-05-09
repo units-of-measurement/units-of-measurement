@@ -58,6 +58,7 @@ def convert(
     use_default_mappings: bool = True
 ) -> Graph:
     """
+    Generates an RDF graph seeded from an input list of UCUM codes
 
     :param inputs: list of UCUM codes
     :param ucum_si: UCUM symbol -> dict containing symbol, label, and definition
