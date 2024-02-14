@@ -3,7 +3,7 @@ from os import path
 
 here = path.abspath(path.dirname(__file__))
 
-with open(here + "/README.md", "r") as fh:
+with open(here + "/README.md", "r", encoding="utf8") as fh:
     long_description = fh.read()
 
 install_requires = ["lark-parser", "rdflib"]
