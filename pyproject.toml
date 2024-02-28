@@ -1,0 +1,181 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+# Storing project metadata in pyproject.toml https://peps.python.org/pep-0621/
+name = "units-of-measurement"
+description = "A package to encode UCUM units as linked data URIs"
+version = "0.0.1"
+
+dependencies = [
+  "lark-parser",
+  "rdflib",
+]
+authors = [
+  # Authors sorted by number of commits
+  {name = "Becky Jackson"},
+  {name = "James A. Overton", email = "james@overton.ca"},
+  {name = "Chris Mungall", email = "cjm@berkeleybop.org"},
+  {name = "Kai Blumberg", email = "kblumberg@email.arizona.edu"},
+  {name = "David Linke", email = "david.linke@catalysis.de"},
+]
+
+# maintainers = [
+#   {name = "Britta Nanni", email = "britta@example.com"}
+# ]
+license = {file = "LICENSE"}
+readme = "README.md"
+requires-python = ">= 3.8"
+keywords = ["UCUM", "units of measurement", "semantic web", "uris"]
+# https://pypi.org/classifiers/
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Science/Research",
+  "Topic :: Scientific/Engineering",
+  "License :: OSI Approved :: BSD License",
+  "Operating System :: OS Independent",
+  "Framework :: Pytest",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+]
+
+[project.urls]
+Homepage = "https://github.com/units-of-measurement/units-of-measurement"
+Repository = "https://github.com/units-of-measurement/units-of-measurement.git"
+Issues = "https://github.com/units-of-measurement/units-of-measurement/issues"
+
+[project.optional-dependencies]
+tests = [
+  "pytest",
+  "flake8",
+]
+dev = [
+  "units-of-measurement[tests]",
+  "ruff",
+]
+
+[project.scripts]
+uom = "units_of_measurement.cli:main"
+
+# Build targets for hatch are defined as sections within tool.hatch.build.targets:
+[tool.hatch.build.targets.sdist]
+include = [
+  "/units_of_measurement",
+  "/resources/*.csv"
+]
+[tool.hatch.build.targets.wheel]
+packages = ["units_of_measurement"]
+
+[tool.pytest.ini_options]
+# pytest configuration:
+# https://docs.pytest.org/en/stable/customize.html
+
+# Sets directories to be searched for tests. Useful when all project tests are
+# in a known location to speed up test collection and to avoid picking up
+# undesired tests by accident.
+testpaths = [
+  "tests",
+ ]
+
+# Directories that are not visited by pytest collector:
+norecursedirs = "dist build .tox .git .cache __pycache__ .venv"
+
+[tool.ruff]
+# https://beta.ruff.rs/docs/configuration/
+exclude = [
+    "__pycache__",
+    "*.egg",
+    ".*",
+]
+line-length = 127
+# Assume Python 3.8
+target-version = "py38"
+
+
+[tool.ruff.lint]
+ignore = [
+    "B905",  # zip() without an explicit strict= parameter set. (requires python >= 3.10)
+    "E501",  # line too long
+    "ISC001", # Conficts with ruff formatter
+]
+# Avoid trying to fix these violations
+unfixable = [
+    "B",  # flake8-bugbear
+]
+# Rule selection https://beta.ruff.rs/docs/rules/
+select = [
+    # sort order as in ruff docs
+    "F",   # Pyflakes
+    "E",   # pycodestyle (errors)
+    "W",   # pycodestyle (warnings)
+    "C90", # mccabe
+    # "I",   # isort
+    # "N",   # pep8-naming
+    # "D",   # pydocstyle
+    # "UP",  # pyupgrade
+    # "YTT", # flake8-2020
+    # flake8-annotations (ANN)
+    # flake8-async (ASYNC)
+    # flake8-trio (TRIO)
+    # "S",   # flake8-bandit
+    # "BLE", # flake8-blind-except
+    # "FBT", # flake8-boolean-trap
+    "B",   # flake8-bugbear
+    # "A",   # flake8-builtins
+    # flake8-commas (COM)
+    # flake8-copyright (CPY)
+    # "C4",  # flake8-comprehensions
+    # "DTZ", # flake8-datetimez
+    # "T10", # flake8-debugger
+    # "DJ",  # flake8-django
+    # "EM",  # flake8-errmsg
+    # flake8-executable (EXE)
+    # "FA",  # flake8-future-annotations
+    # "ISC", # flake8-implicit-str-concat
+    # flake8-import-conventions (ICN)
+    # "G",   # flake8-logging-format
+    # flake8-no-pep420 (INP)
+    # "PIE", # flake8-pie
+    # "T20", # flake8-print
+    # flake8-pyi (PYI)
+    # "PT",  # flake8-pytest-style
+    # "Q",   # flake8-quotes
+    # "RSE", # flake8-raise
+    # "RET", # flake8-return
+    # "SLF", # flake8-self
+    # "SLOT",# flake8-slots
+    # "SIM", # flake8-simplify
+    # flake8-tidy-imports (TID)
+    # "TCH", # flake8-type-checking
+    # "INT", # flake8-gettext
+    # "ARG", # flake8-unused-arguments (ARG)
+    # "PTH", # flake8-use-pathlib (PTH)
+    # "TD",  # flake8-todos
+    # "FIX", # flake8-fixme
+    # "ERA", # eradicate - commented out code
+    # "PD",  #pandas-vet
+    # "PGH", # pygrep-hooks
+    # "PL",  # whole Pylint (Convention, Error, Refactor, Warning)
+    # "TRY", # tryceratops (TRY)
+    # "FLY", # flynt
+    # "NPY" , # NumPy-specific rules
+    # Airflow (AIR)
+    # "PERF", # Perflint
+    # "FURB", # refurb
+    # "LOG", # flake8-logging
+    # "RUF", # Ruff-specific rules
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*.py" = [
+  "S101",   # assert in tests is OK
+]
+
+[tool.ruff.lint.mccabe]
+# Flake8-mccabe uses a default level of 7, ruff of 10.
+max-complexity = 10
