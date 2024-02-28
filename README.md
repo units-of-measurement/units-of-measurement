@@ -29,12 +29,14 @@ Normalization: There may be multiple ways to write a unit as a UCUM code. The fo
 
 ## Getting Started
 
-The `ontodev-units` package will be downloadable from PyPI in the future, but at this time, you need to setup from source. Download this repository then install the requirements:
+The `ontodev-units` package will be downloadable from PyPI in the future, but at this time, you need to setup from source. Download this repository then install the package:
+
+Then, install `ontodev-units` from this directory including development dependencies with:
 ```
-python3 -m pip install -r requirements.txt
+python3 -m pip install .[dev]
 ```
 
-Then, install `ontodev-units` from this directory:
+or if you don't just need the pure package:
 ```
 python3 -m pip install .
 ```
@@ -67,7 +69,7 @@ Optional arguments:
 * `-b`/`--base-iri`: the base IRI for the "unit" namespace. The default is `https://w3id.org/uom/`.
 * `-x`/`--exclude-mappings`: If this flag is included, exclude ontology mappings from the output
 * `-f`/`--format`: output format (`ttl`, `json-ld`, `xml`, or `html`). If not included, the default is `ttl`.
-* `-l`/`--lang`: the language used for input labels and definitions. The default is `en` and if you specify a different language, you must include your own input files (above args). Note that output definitons are currently only in English.
+* `-l`/`--lang`: the language used for input labels and definitions. The default is `en` and if you specify a different language, you must include your own input files (above args). Note that output definitions are currently only in English.
 
 
 ### Input Tables
@@ -80,10 +82,10 @@ This table maps standard SI symbols to UCUM symbols. This file requires the foll
 * `UCUM_symbol`
 * `SI_symbol`
 * `label_en`: The label in English (you can replace 'en' with another lang tag if you're using a different language as specified in the command line, e.g., `label_fr`)
-* `exact_synonym_en`: An optional field for exact English synonyms; mutliple synonyms should be pipe-separated (same as above, e.g., `exact_synonym_fr`)
+* `exact_synonym_en`: An optional field for exact English synonyms; multiple synonyms should be pipe-separated (same as above, e.g., `exact_synonym_fr`)
 * `definition_en`: The definition in English (same as above, e.g., `definition_fr`)
 
-For example (with truncated defintion):
+For example (with truncated definition):
 
 | UCUM_symbol | SI_symbol | label_en       | exact_synonym_en |definition_en               |
 | ----------- | --------- | -------------- | ---------------- |--------------------------- |
