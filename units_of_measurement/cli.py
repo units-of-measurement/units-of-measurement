@@ -28,10 +28,10 @@ def main():
         "-b", "--base-iri", default="https://w3id.org/uom/", help="Base IRI for units"
     )
     parser.add_argument(
-        "--strict", action='store_true', default=False, help="If strict then throw error on unparseable unit"
+        "--strict", action='store_true', default=True, help="If strict then throw error on unparseable unit"
     )
     parser.add_argument(
-        "--no-strict", action='store_false', help="If no-strict then throw error on unparseable unit"
+        "--no-strict", action='store_false', help="If no-strict then do not throw error on unparseable unit"
     )
     args = parser.parse_args()
 
