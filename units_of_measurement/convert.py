@@ -46,7 +46,7 @@ QUDT = Namespace(ONTOLOGY_PREFIXES["QUDT"])
 UO = Namespace(ONTOLOGY_PREFIXES["UO"])
 
 
-def convert(
+def convert(  # noqa: C901
     inputs: list,
     ucum_si: dict = None,
     unit_prefixes: dict = None,
@@ -114,18 +114,18 @@ def convert(
         try:
             tree = si_grammar.parse(inpt)
             result = UnitsTransformer().transform(tree)
-        except (LarkError, TypeError) as e:
+        except (LarkError, TypeError) as exc:
             if fail_on_err:
-                raise ValueError(f"Could not process '{inpt}' with SI parser", e)
+                raise ValueError(f"Could not process '{inpt}' with SI parser") from exc
             logging.error(f"Could not process '{inpt}' with SI parser - this input will be skipped")
             continue
 
         # Attempt to flatten the result tree
         try:
             res_flat = flatten(result)
-        except RecursionError as e:
+        except RecursionError as exc:
             if fail_on_err:
-                raise RecursionError(f"Could not flatten result from '{inpt}'", e)
+                raise RecursionError(f"Could not flatten result from '{inpt}'") from exc
             logging.error(f"Could not flatten result from '{inpt}' - this input will be skipped")
             continue
 
@@ -175,9 +175,9 @@ def convert(
         try:
             num_list = sorted(num_list, key=lambda k: (k["ucum_code"].casefold(), k))
             denom_list = sorted(denom_list, key=lambda k: (k["ucum_code"].casefold(), k))
-        except ValueError as e:
+        except ValueError as exc:
             if fail_on_err:
-                raise ValueError(f"Could not sort result from '{inpt}'", e)
+                raise ValueError(f"Could not sort result from '{inpt}'") from exc
             logging.error(f"Could not sort result from '{inpt}' - this input will be skipped")
             continue
 
@@ -290,7 +290,7 @@ def get_canonical_label(num_list: List[dict], denom_list: List[dict], lang: str 
     return " ".join(result)
 
 
-def get_canonical_definition(
+def get_canonical_definition(  # noqa: C901
     num_list: List[dict],
     denom_list: List[dict],
     ucum_si: dict,
@@ -642,7 +642,7 @@ def get_synonyms_part(
     return unit_synonyms
 
 
-def get_triples(
+def get_triples(  # noqa: C901
     ucum_codes: List[str],
     equivalent_codes: List[str],
     label: str,
@@ -719,7 +719,7 @@ def get_ucum_code_part(part, numerator: bool = False):
     return part["ucum_code"] + str(part["exponent"])
 
 
-def graph_to_html(gout: Graph, rdf_type=OWL.NamedIndividual) -> str:
+def graph_to_html(gout: Graph, rdf_type=OWL.NamedIndividual) -> str:  # noqa: C901
     """Convert an rdflib Graph containing UCUM triples to HTML+RDFa."""
     # Create the RDFa prefix string
     prefixes = []
