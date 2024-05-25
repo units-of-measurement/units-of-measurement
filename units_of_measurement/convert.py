@@ -538,14 +538,17 @@ def get_label_part(
         prefix = ""
 
     # Maybe get unit
-    unit_details = ucum_si.get(result["unit"])
-    if not unit_details:
-        logging.warning("No 'unit' entry in results:\n" + json.dumps(result, indent=4))
-        unit = None
+    if result["type"] == "non-unit":
+        unit = "{" + result["unit"] + "}"
     else:
-        unit = unit_details[f"label_{lang}"]
-        if unit == "are" and prefix in ["hecto", "deca"]:
-            prefix = prefix[:-1]
+        unit_details = ucum_si.get(result["unit"])
+        if not unit_details:
+            logging.warning("No 'unit' entry in results:\n" + json.dumps(result, indent=4))
+            unit = None
+        else:
+            unit = unit_details[f"label_{lang}"]
+            if unit == "are" and prefix in ["hecto", "deca"]:
+                prefix = prefix[:-1]
 
     # Check for an exponent & return formatted string
     power = get_exponent(result, unit_exponents, lang=lang)
