@@ -97,12 +97,3 @@ unit:har a owl:NamedIndividual ;
         OM:hectare ;
     unit:SI_code "ha" ;
     unit:UCUM_code "har" .
-
-<https://w3id.org/uom/m%27%27> a owl:NamedIndividual ;
-    rdfs:label "milliplane angle second"@en ;
-    skos:altLabel "milliarc second"@en ;
-    skos:definition "A unit which is equal to 10⁻³ plane angle second."@en ;
-    skos:exactMatch OM:millisecond-Angle ;
-    unit:SI_code "m′′" ;
-    unit:UCUM_code "m''" .
-

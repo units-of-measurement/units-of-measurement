@@ -143,12 +143,18 @@ def convert(  # noqa: C901
 
         ### NEW Parser
         # TODO: Clean up
-        new_tree = ucum_parser.parse(inpt)
-        # print('NEW TREE', new_tree)
-        new_result = NewUnitsTransformer().transform(new_tree)
-        new_processed_units = [new_process_result(r) for r in new_result]
-        # print('EQUAL?', new_processed_units == processed_units)
-        processed_units = new_processed_units
+        try:
+            new_tree = ucum_parser.parse(inpt)
+            # print('NEW TREE', new_tree)
+            new_result = NewUnitsTransformer().transform(new_tree)
+            new_processed_units = [new_process_result(r) for r in new_result]
+            # print('EQUAL?', new_processed_units == processed_units)
+            processed_units = new_processed_units
+        except (LarkError, TypeError) as exc:
+            if fail_on_err:
+                raise ValueError(f"Could not process '{inpt}' with SI parser") from exc
+            logging.error(f"Could not process '{inpt}' with SI parser - this input will be skipped")
+            continue
 
         ### Continue with OLD code using NEW processed_units
 
