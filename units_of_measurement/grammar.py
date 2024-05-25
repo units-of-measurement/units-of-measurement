@@ -1,6 +1,106 @@
 from lark import Lark, Transformer
 
 
+class NewUnitsTransformer(Transformer):
+    def main_term(self, args):
+        if len(args) == 2:  # DIVIDE term
+            result = args[1]
+            if isinstance(result, list):
+                result[0]['operator'] = args[0]
+                return result
+            elif isinstance(result, dict):
+                result['operator'] = args[0]
+                return [result]
+            else:
+                raise Exception('main_term')
+        elif len(args) == 1:  # term
+            if isinstance(args[0], list):
+                return args[0]
+            else:
+                return args
+        else:
+            raise Exception('main_term')
+
+    def term(self, args):
+        if len(args) == 3:  # term OPERATOR component
+            result = [args[0], args[2]]
+            if isinstance(result[0], list):
+                result = result[0] + [result[1]]
+            result[-1]['operator'] = args[1]
+            return result
+        elif len(args) == 1:  # component
+            raise NotImplementedError('term 1')
+        else:
+            raise Exception()
+
+    def component(self, args):
+        if len(args) == 2:  # annotatable ANNOTATION
+            raise NotImplementedError('component 2')
+        elif len(args) == 1:  # annotatable
+            raise NotImplementedError('component 1')
+        else:
+            raise Exception()
+
+    def annotatable(self, args):
+        if len(args) == 2:  # simple_unit EXPONENT
+            result = args[0]
+            result['exponent'] = args[1]
+            return result
+        elif len(args) == 1:  # simple_unit
+            return args[0]
+        else:
+            raise Exception()
+
+    def simple_unit(self, args):
+        if len(args) == 2:  # PREFIX_SHORT UNIT_METRIC | PREFIX_LONG UNIT_METRIC
+            result = args[1]
+            result['prefix'] = args[0]
+            return result
+        elif len(args) == 1:  # UNIT_METRIC | UNIT_NON_METRIC | FACTOR
+            if isinstance(args[0], int):
+                return {'type': 'factor', 'unit': 'factor', 'factor': args[0]}
+            return args[0]
+        else:
+            raise Exception()
+
+    def UNIT_METRIC(self, args):
+        return {'type': 'metric', 'unit': ''.join(args)}
+
+    def UNIT_NON_METRIC(self, args):
+        # TODO: decide whether to keep treating these as "metric"
+        exceptions = ["AU", "Cel", "deg", "d", "h", "min", "'", "''", "m'"]
+        unit = ''.join(args)
+        if unit in exceptions:
+            return {'type': 'metric', 'unit': unit}
+        return {'type': 'conventional', 'unit': unit}
+
+    def DIVIDE(self, args):
+        return args[0]
+
+    def OPERATOR(self, args):
+        return args[0]
+
+    def FACTOR(self, args):
+        return int(''.join(args))
+
+    def EXPONENT(self, args):
+        if len(args) == 1:
+            return int(args[0])
+        elif len(args) == 2:
+            return int(args[0] + args[1])
+        else:
+            raise Exception()
+
+    def PREFIX_SHORT(self, args):
+        return args[0]
+
+    def PREFIX_LONG(self, args):
+        return ''.join(args)
+
+    def ANNOTATION(self, args):
+        return {'type': 'non-unit', 'unit': args[1:-1]}
+
+
 class UnitsTransformer(Transformer):
     def SIGN(self, args):
         return args[0]

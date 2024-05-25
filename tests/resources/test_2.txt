@@ -4,7 +4,5 @@ Ohm
 deg
 '
 ''
-m'
-m''
 ar
 har

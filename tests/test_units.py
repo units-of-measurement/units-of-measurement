@@ -42,12 +42,12 @@ def convert_test(n):
 def test_convert_unsupported():
     failed_as_expected = False
     try:
-        convert(['mm[Hg]'], fail_on_err=True)
+        convert(['mm[Hg]_'], fail_on_err=True)
     except ValueError as e:
         logging.info(f'Got expected exception: {e}')
         failed_as_expected = True
     assert failed_as_expected
-    g = convert(['mm[Hg]'], fail_on_err=False)
+    g = convert(['mm[Hg]_'], fail_on_err=False)
     assert len(list(g.triples((None, None, None)))) == 0
 
 def test_units():

@@ -9,8 +9,9 @@ description = "A package to encode UCUM units as linked data URIs"
 version = "0.0.1"
 
 dependencies = [
-  "lark-parser",
+  "lark",
   "rdflib",
+  "ucumvert",
 ]
 authors = [
   # Authors sorted by number of commits
