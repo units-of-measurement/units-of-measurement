@@ -29,9 +29,9 @@ Normalization: There may be multiple ways to write a unit as a UCUM code. The fo
 
 ## Getting Started
 
-The `ontodev-units` package will be downloadable from PyPI in the future, but at this time, you need to setup from source. Download this repository then install the package:
+The `units-of-measurement` package will be downloadable from PyPI in the future, but at this time, you need to setup from source. Download this repository then install the package:
 
-Then, install `ontodev-units` from this directory including development dependencies with:
+Then, install `units-of-measurement` from this directory including development dependencies with:
 ```
 python3 -m pip install .[dev]
 ```

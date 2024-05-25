@@ -8,9 +8,11 @@ from itertools import permutations, product
 from lark.exceptions import LarkError
 from rdflib import Graph, Literal, Namespace, OWL, RDF, RDFS, SKOS
 from typing import List, Optional
+from ucumvert import get_ucum_parser
 from urllib.parse import quote as url_quote
-from .grammar import si_grammar, UnitsTransformer
+from .grammar import si_grammar, UnitsTransformer, NewUnitsTransformer
 from .helpers import get_exponents, get_mappings, get_prefixes, get_si_mappings
+
 
 KG_DEFINITION_EN = (
     "An SI base unit which 1) is the SI unit of mass and 2) is defined by taking "
@@ -44,6 +46,9 @@ OBOE = Namespace(ONTOLOGY_PREFIXES["OBOE"])
 OM = Namespace(ONTOLOGY_PREFIXES["OM"])
 QUDT = Namespace(ONTOLOGY_PREFIXES["QUDT"])
 UO = Namespace(ONTOLOGY_PREFIXES["UO"])
+
+
+ucum_parser = get_ucum_parser()
 
 
 def convert(  # noqa: C901
@@ -110,29 +115,42 @@ def convert(  # noqa: C901
 
     # Process given inputs
     for inpt in inputs:
+        ### OLD parser
         # Parse the input with Lark
-        try:
-            tree = si_grammar.parse(inpt)
-            result = UnitsTransformer().transform(tree)
-        except (LarkError, TypeError) as exc:
-            if fail_on_err:
-                raise ValueError(f"Could not process '{inpt}' with SI parser") from exc
-            logging.error(f"Could not process '{inpt}' with SI parser - this input will be skipped")
-            continue
+        # TODO: remove this
+        # try:
+        #     tree = si_grammar.parse(inpt)
+        #     result = UnitsTransformer().transform(tree)
+        # except (LarkError, TypeError) as exc:
+        #     if fail_on_err:
+        #         raise ValueError(f"Could not process '{inpt}' with SI parser") from exc
+        #     logging.error(f"Could not process '{inpt}' with SI parser - this input will be skipped")
+        #     continue
 
-        # Attempt to flatten the result tree
-        try:
-            res_flat = flatten(result)
-        except RecursionError as exc:
-            if fail_on_err:
-                raise RecursionError(f"Could not flatten result from '{inpt}'") from exc
-            logging.error(f"Could not flatten result from '{inpt}' - this input will be skipped")
-            continue
+        # # Attempt to flatten the result tree
+        # try:
+        #     res_flat = flatten(result)
+        # except RecursionError as exc:
+        #     if fail_on_err:
+        #         raise RecursionError(f"Could not flatten result from '{inpt}'") from exc
+        #     logging.error(f"Could not flatten result from '{inpt}' - this input will be skipped")
+        #     continue
 
-        # Convert result into list of dicts
-        processed_units = []
-        for r in res_flat:
-            processed_units.append(process_result(r, inpt))
+        # # Convert result into list of dicts
+        # processed_units = []
+        # for r in res_flat:
+        #     processed_units.append(process_result(r, inpt))
+
+        ### NEW Parser
+        # TODO: Clean up
+        new_tree = ucum_parser.parse(inpt)
+        # print('NEW TREE', new_tree)
+        new_result = NewUnitsTransformer().transform(new_tree)
+        new_processed_units = [new_process_result(r) for r in new_result]
+        # print('EQUAL?', new_processed_units == processed_units)
+        processed_units = new_processed_units
+
+        ### Continue with OLD code using NEW processed_units
 
         # Determine type SI vs. conventional to optionally add SI codes
         types = [u["type"] for u in processed_units]
@@ -808,6 +826,22 @@ def graph_to_html(gout: Graph, rdf_type=OWL.NamedIndividual) -> str:  # noqa: C9
         html.append("</div>")
     html.append("</div>")
     return "\n".join(html)
+
+
+# TODO: try to integrate into NewUnitsTransformer.
+def new_process_result(result: dict) -> dict:
+    if 'operator' in result and result['operator'] == '/':
+        if 'exponent' in result:
+            result['exponent'] = -1 * result['exponent']
+        else:
+            result['exponent'] = -1
+    if 'operator' in result:
+        del result['operator']
+    if 'prefix' not in result:
+        result['prefix'] = ''
+    if 'exponent' not in result:
+        result['exponent'] = 1
+    return result
 
 
 def process_result(result: dict, original: str) -> dict:
