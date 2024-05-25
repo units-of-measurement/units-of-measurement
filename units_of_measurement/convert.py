@@ -479,12 +479,14 @@ def get_definition_parts(
     """Get a definition for this part of the parsed term."""
     return_lst = []
     for u in units_list:
-        unit_details = umuc_si.get(u["unit"])
-        if not unit_details:
-            logging.error("Unknown unit: " + u["unit"])
-            return None
-
-        unit = unit_details[f"label_{lang}"]
+        if u["type"] == "non-unit":
+            unit = "{" + u["unit"] + "}"
+        else:
+            unit_details = umuc_si.get(u["unit"])
+            if not unit_details:
+                logging.error("Unknown unit: " + u["unit"])
+                return None
+            unit = unit_details[f"label_{lang}"]
         power = get_exponent(u, unit_exponents, lang=lang)
 
         # Get the prefix
