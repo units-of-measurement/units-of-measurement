@@ -745,9 +745,13 @@ def get_triples(  # noqa: C901
 def get_ucum_code_part(part, numerator: bool = False):
     """Use the parsed part to create the UCUM code.
     If the part is a numerator, only include exponent if exponent != 1."""
+    if part["type"] == "non-unit":
+        return_code = "{" + part["ucum_code"] + "}"
+    else:
+        return_code = part["ucum_code"]
     if numerator and str(part["exponent"]) == "1":
-        return part["ucum_code"]
-    return part["ucum_code"] + str(part["exponent"])
+        return return_code
+    return return_code + str(part["exponent"])
 
 
 def graph_to_html(gout: Graph, rdf_type=OWL.NamedIndividual) -> str:  # noqa: C901
