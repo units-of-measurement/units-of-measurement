@@ -847,6 +847,9 @@ def graph_to_html(gout: Graph, rdf_type=OWL.NamedIndividual) -> str:  # noqa: C9
 
 # TODO: try to integrate into NewUnitsTransformer.
 def new_process_result(result: dict) -> dict:
+    # 'l' -> 'L' is a special exception in SI and UCUM.
+    if 'type' in result and result['type'] == 'metric' and result['unit'] == 'l':
+        result['unit'] = 'L'
     if 'operator' in result and result['operator'] == '/':
         if 'exponent' in result:
             result['exponent'] = -1 * result['exponent']
