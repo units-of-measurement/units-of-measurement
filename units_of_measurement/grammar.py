@@ -97,6 +97,9 @@ class NewUnitsTransformer(Transformer):
     def PREFIX_LONG(self, args):
         return ''.join(args)
 
+    def ANNOTATION(self, args):
+        return {'type': 'non-unit', 'unit': args[1:-1]}
+
 
 class UnitsTransformer(Transformer):
     def SIGN(self, args):

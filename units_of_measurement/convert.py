@@ -147,13 +147,15 @@ def convert(  # noqa: C901
             new_tree = ucum_parser.parse(inpt)
             # print('NEW TREE', new_tree)
             new_result = NewUnitsTransformer().transform(new_tree)
+            # print('NEW RESULT', new_result)
             new_processed_units = [new_process_result(r) for r in new_result]
+            # print('NEW PROCESSED', new_processed_units)
             # print('EQUAL?', new_processed_units == processed_units)
             processed_units = new_processed_units
         except (LarkError, TypeError) as exc:
             if fail_on_err:
-                raise ValueError(f"Could not process '{inpt}' with SI parser") from exc
-            logging.error(f"Could not process '{inpt}' with SI parser - this input will be skipped")
+                raise ValueError(f"Could not process '{inpt}' with UCUM parser") from exc
+            logging.error(f"Could not process '{inpt}' with UCUM parser - this input will be skipped")
             continue
 
         ### Continue with OLD code using NEW processed_units
